@@ -37,9 +37,9 @@
   <body class="d-flex flex-column min-vh-100">
 
  
-  <nav class="shadow navbar navbar-expand-sm p-3 sticky-top">
+  <nav class="shadow navbar navbar-expand-sm p-3 bg-white sticky-top">
     <div class="container-fluid">
-      <a class="navbar-brand fs-3 fw-bold" href="/#">杉行居</a>
+      <a class="navbar-brand fs-3 fw-bold" href="/#">杉行居 / SHAN HANG JU</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -91,6 +91,11 @@
   {% endwith %}
 
     <div class="container">
+        <div class="bg-image" 
+             style="background-image: url('static/bg.jpg');
+                    background-size: cover;
+                    height: 100vh">
+        </div>
       {% block content %} {% endblock %}
     </div>
 
