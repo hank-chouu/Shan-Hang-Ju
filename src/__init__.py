@@ -26,5 +26,6 @@ def create_app():
         return user
 
     app.register_blueprint(customer, url_prefix = '/')
+    app.register_blueprint(admin, url_prefix = '/admin')
 
     return app
