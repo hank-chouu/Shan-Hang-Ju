@@ -22,3 +22,9 @@ def reservation():
 def rooms_type():
 
     return render_template('rooms_view.html')
+
+
+@customer.route('/location', methods = ['GET'])
+def location():
+
+    return render_template('location.html')

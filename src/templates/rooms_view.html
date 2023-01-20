@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{%block title %} 房型資訊 - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+<div class="row mb-md-5">
+  <div class="col-md-8 offset-md-2">
+    <h2 class="fw-bold">房型一覽</h2>
+    <hr>
+    <div class="row my-2">
+      <div class="col-md-4 my-2 px-md-custom">
+        <div class="card rounded-2 shadow">
+          <a href="/rooms/301">
+            <img src="static/rooms/301_1.jpg" class="img-fluid">
+          </a>
+          <div class="cardbody p-2">
+            <h5 class="card-title mt-1">杉行街 / 四人房</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 my-2 px-md-custom">
+        <div class="card rounded-2 shadow">
+          <a href="/rooms/302">
+            <img src="static/rooms/302_1.jpg" class="img-fluid">
+          </a>
+          <div class="cardbody p-2">
+            <h5 class="card-title mt-1">君子巷 / 雙人房</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 my-2 px-md-custom">
+        <div class="card rounded-2 shadow">
+          <!-- <a href="/rooms/">
+            <img src="static/rooms/.jpg" class="img-fluid">
+          </a> -->
+          <div class="cardbody p-2">
+            <h5 class="card-title mt-1">後車巷 / 雙人房</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 my-2 px-md-custom">
+        <div class="card rounded-2 shadow">
+          <a href="/rooms/501">
+            <img src="static/rooms/501_1.jpg" class="img-fluid">
+          </a>
+          <div class="cardbody p-2 px-md-custom">
+            <h5 class="card-title mt-1">桂花巷 / 雙人房</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 my-2 px-md-custom">
+        <div class="card rounded-2 shadow">
+          <a href="/rooms/502">
+            <img src="static/rooms/502_1.jpg" class="img-fluid">
+          </a>
+          <div class="cardbody p-2">
+            <h5 class="card-title mt-1">九曲巷 / 三人房</h5>
+          </div>
+        </div>
+      </div>
+    </div>    
+  </div>
+</div>
+{% endblock %}

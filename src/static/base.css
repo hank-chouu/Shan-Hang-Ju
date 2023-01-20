@@ -1,19 +1,21 @@
-.outer {
-    display: table;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
+.rwd-map {
+  display: block; position: relative;
+  overflow: hidden; height: 0; padding: 0;
+  padding-bottom: 75%;
   }
-  
-  .middle {
-    display: table-cell;
-    vertical-align: middle;
+  .rwd-map iframe {
+  position: absolute;
+  height: 70%; width: 100%;
+  left: 0; top: 0;
   }
-  
-  .inner {
-    margin-left: auto;
-    margin-right: auto;
-    /* Whatever width you want */
+
+  .card {
+    overflow: hidden;
   }
+
+@media (max-width: 767px) {  
+  .px-md-custom {      
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
