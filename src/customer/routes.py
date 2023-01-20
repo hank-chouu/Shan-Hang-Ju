@@ -13,18 +13,43 @@ def entrance():
 
     return redirect(url_for('customer.home'))
 
-@customer.route('/reservation', methods = ['GET', 'POST'])
-def reservation():
+@customer.route('/location', methods = ['GET'])
+def location():
 
-    return render_template('reservation.html')
+    return render_template('location.html')
+
+## rooms
 
 @customer.route('/rooms', methods = ['GET'])
 def rooms_type():
 
     return render_template('rooms_view.html')
 
+@customer.route('/rooms/301', methods = ['GET'])
+def room301():
 
-@customer.route('/location', methods = ['GET'])
-def location():
+    return render_template('room301.html')
 
-    return render_template('location.html')
+
+@customer.route('/rooms/302', methods = ['GET'])
+def room302():
+
+    return render_template('room302.html')
+
+@customer.route('/rooms/501', methods = ['GET'])
+def room501():
+
+    return render_template('room501.html')
+
+@customer.route('/rooms/502', methods = ['GET'])
+def room502():
+
+    return render_template('room502.html')
+
+## reservation
+
+@customer.route('/reservation', methods = ['GET', 'POST'])
+def reservation():
+
+    return render_template('reservation.html')
+

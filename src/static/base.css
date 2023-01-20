@@ -19,3 +19,19 @@
     padding-right: 2rem;
   }
 }
+
+.badge-color {
+  background-color: #68944e;
+  color:white;
+}
+
+/* table { width: inherit !important; } */
+
+td {
+  width: auto;
+}
+
+td.min {
+  width: 3rem;
+  white-space: nowrap;
+}
