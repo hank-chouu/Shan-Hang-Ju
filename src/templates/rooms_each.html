@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{%block title %} 九曲巷 | 房型資訊 - 杉行居 {% endblock title %}
+{%block title %} {{ title }} | 房型資訊 - 杉行居 {% endblock title %}
 
 {% block content %}
 
@@ -8,31 +8,33 @@
 
 <div class="row mb-md-5">
   <div class="col-md-8 offset-md-2">
-    <h2 class="fw-bold ms-2">九曲巷（三人房）</h2>
+    <h2 class="fw-bold ms-2">{{ header }}</h2>
     <hr>
     <div class="row">
       <div class="col-md-7">
-        <div id="carousel" class="carousel slide p-2" data-bs-ride="carousel">
+        <div id="carousel" class="carousel slide p-2" data-bs-ride="carousel">                    
           <div class="carousel-indicators">
+            {% for index in imgs.keys() %}
+            {% if index == 0 %}
             <button type="button" data-bs-target="#carousel" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carousel" data-bs-slide-to="2"></button>
-            <button type="button" data-bs-target="#carousel" data-bs-slide-to="3"></button>
-          </div>
+            {% else %}
+            <button type="button" data-bs-target="#carousel" data-bs-slide-to="{{ index }}"></button>
+            {% endif %}
+            {% endfor %}         
+          </div>          
           <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="/static/rooms/502_2.jpg" class="d-block w-100" >
+            {% for index, img in imgs.items() %}
+            {% if index == 0 %}   
+            <div class="carousel-item active">                       
+              <img src="/static/rooms/{{ img }}" class="d-block w-100" >              
             </div>
-            <div class="carousel-item">
-              <img src="/static/rooms/502_3.jpg" class="d-block w-100" >
+            {% else %}
+            <div class="carousel-item">                       
+              <img src="/static/rooms/{{ img }}" class="d-block w-100" >              
             </div>
-            <div class="carousel-item">
-              <img src="/static/rooms/502_4.jpg" class="d-block w-100" >
-            </div> 
-            <div class="carousel-item">
-              <img src="/static/rooms/502_5.jpg" class="d-block w-100" >
-            </div>           
-          </div>
+            {% endif %}
+            {% endfor %}          
+          </div>          
           <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -51,8 +53,13 @@
               <td class="min">加人 / 加床</td>
               <td>
                 <div class="fs-5">
+                  {% if add == 0 %}
+                  <span class="badge badge-color">不可加人</span>
+                  <span class="badge badge-color">不可加床</span>
+                  {% elif add == 1 %}
                   <span class="badge badge-color">可加一人</span>
                   <span class="badge badge-color">可加一床</span>
+                  {% endif %}
                 </div>
               </td>
             </tr>
@@ -77,10 +84,10 @@
               <td>
                 <div class="fs-5">
                   <span class="badge badge-color">電視</span>
+                  <span class="badge badge-color">第四台</span>
                   <span class="badge badge-color">MOD</span>
-                  <span class="badge badge-color">冷氣</span>
-                  <span class="badge badge-color">熱水壺</span>
-                  <span class="badge badge-color">冰箱</span>
+                  <span class="badge badge-color">冷暖氣</span>
+                  <span class="badge badge-color">電熱壺</span>
                   <span class="badge badge-color">吹風機</span>
                 </div>
               </td>
@@ -109,17 +116,19 @@
     <table class="table table-bordered text-center px-2 my-2" style='table-layout:fixed; border: 1px solid; border-color:darkgray; ' bordercolor="#eeeeee">
       <tbody>
         <tr>
-          <td colspan="3">房價表</td>
+          <td colspan="4">房價表</td>
         </tr>
         <tr>
           <td>定價</td>
           <td>平日房價</td>
-          <td>假日房價</td>          
+          <td>假日房價</td>
+          <td>農曆春節</td>          
         </tr>
         <tr>
-          <td>NT4,200</td>
-          <td>NT2,500</td>
-          <td>NT3,000</td>
+          <td>{{ pricing[0] }}</td>
+          <td>{{ pricing[1] }}</td>
+          <td>{{ pricing[2] }}</td>
+          <td>{{ pricing[3] }}</td>
         </tr>
       </tbody>
     </table>
@@ -129,7 +138,6 @@
     <ul>
       <li>平日：星期日至星期四</li>
       <li>假日：星期五至星期六、國定假日及連續假日</li>
-      <li>定價：農曆春節期間</li>
     </ul>
     <p>【進退房時間】</p>
     <ul>
@@ -142,21 +150,18 @@
         <ul>      
           <li><u class="fw-bold">若需車位，請提前三天告知，否則無法預留</u></li>
           <li>禁止攜帶寵物</li>
-          <li>室內全面禁止酒、吸菸、嚼檳榔</li>
+          <li>室內全面禁止酒、吸菸、嚼檳榔，及任何違禁品</li>
           <li>入住時請出示身分證件以供登記，並請繳清餘款</li> 
           <li>請依房型人數入住，如需加人，請事先告知</li>     
         </ul>
       </div>
       <div class="col-md-6">
         <ul>          
-          <li>晚上 10:00 過後請降低音量，勿大聲喧嘩，以維護社區安寧及其他旅客權益</li>
+          <li>晚上 10:00 過後請降低音量，勿大聲喧嘩，以維護民宿安寧及其他旅客權益</li>
           <li>個人貴重物品請隨身攜帶並妥善保管，如有遺失恕不負責</li>
         </ul>
       </div>
     </div>
-    
-    
-       
   </div>
 </div>
 
