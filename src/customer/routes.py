@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for
 from markupsafe import escape
 
-customer = Blueprint('customer', __name__)
 
-## functions
+
+## functions, variables and objects
+
+customer = Blueprint('customer', __name__)
 
 def img_indexing(room_num, img_amount:int):
     idx = {}
@@ -40,7 +42,7 @@ def rooms_all():
     return render_template('rooms_all.html')
 
 @customer.route('/rooms/<int:room_num>', methods = ['GET'])
-def room_each(room_num):
+def rooms_each(room_num):
 
     if room_num == 301: 
 
