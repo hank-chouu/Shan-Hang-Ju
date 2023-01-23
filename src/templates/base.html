@@ -18,13 +18,10 @@
     <!--bootstrap-table-->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.css">
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-5-vertical-tabs@2.0.0/dist/b5vtabs.min.css"
-      integrity="sha384-AsoWNxsuu73eGp2MPWHa77155fyqP9rueKOeG4t2d/AD4eyBqL20TClzfbAkrul4"
-      crossorigin="anonymous">
+    <!-- jquery ui -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">    
 
-    
+     <!-- mine -->
     <link href="/static/base.css" rel="stylesheet">
     
     {% block head %}{% endblock %}
@@ -105,11 +102,17 @@
       </div>
     </footer> 
 
-
+    <!-- jquery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <!-- bootstrap's js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <!-- bootstrap table extension -->
     <script src="https://unpkg.com/bootstrap-table@1.21.1/dist/bootstrap-table.min.js"></script>
-    <script>      
+    <!-- jquery ui extension: for date picker -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script> 
+    // flash messages     
       $(document).ready(function(){
         setTimeout(function() {
           $('#errorMessage').fadeOut('fast');

@@ -4,5 +4,89 @@
 
 {% block content %}
 
+<div class="my-md-4">&nbsp;</div>
 
+<div class="row mb-md-5">
+  <div class="col-md-10 offset-md-1">
+    <h2 class="fw-bold text-center mb-md-3">線上訂房</h2>
+    <div class="my-md-4">&nbsp;</div>
+    <div class="card rounded-2 shadow">
+      <div class="cardbody p-4 w-100">
+        <form class="row" method="post" autocomplete="off">
+          <div class="col-md-3 my-md-3 my-1">
+            <label for="check_in_date" class="form-label">入住日期</label>
+            <input type="text" id="check_in_date" name="check_in_date" class="w-100 mt-1">
+          </div>
+          <div class="col-md-3 my-md-3 my-1">
+            <label for="check_out_date" class="form-label">退房日期</label>
+            <input type="text" id="check_out_date" name="check_out_date" class="w-100 mt-1">
+          </div>
+          <div class="col-md-3 my-md-3 my-1">
+            <label for="room_type" class="form-label">選擇房型</label>
+            <select class="form-select" name="room_type">
+              <option selected value="2">雙人房</option>
+              <option value="3">三人房</option>
+              <option value="4">四人房</option>
+            </select>
+          </div>
+          <div class="col-md-3 my-md-3 my-1">
+            <button class="btn w-100 mt-md-38" type="submit" style="background-color: #68944e; color: white;" name="search" value="search">
+                <i class="bi bi-search"></i> 查詢</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+// prevent form re-submitting 
+if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+
+$( function() {
+    var dateFormat = "mm/dd/yy",
+      from = $( "#check_in_date" )
+        .datepicker({           
+          defaultDate: "+1w",
+          changeMonth: true,
+          changeYear: true, 
+          numberOfMonths: 1, 
+          minDate: '0', 
+        })
+        .on( "change", function() {
+          to.datepicker( "option", "minDate", getDate( this ) );
+        }),
+      to = $( "#check_out_date" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        changeYear: true, 
+        numberOfMonths: 1, 
+        minDate: '0', 
+      })
+      .on( "change", function() {
+        from.datepicker( "option", "maxDate", getDate( this ) );
+      });
+ 
+    function getDate( element ) {
+      var date;
+      try {
+        date = $.datepicker.parseDate( dateFormat, element.value );
+      } catch( error ) {
+        date = null;
+      }
+ 
+      return date;
+    }
+  } );
+
+</script>
 {% endblock %}

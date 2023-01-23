@@ -1,5 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for
+from datetime import datetime
 from markupsafe import escape
+
+from src.extensions.models import db, Rooms
 
 
 
@@ -106,3 +109,16 @@ def reservation():
 
     return render_template('reservation.html')
 
+
+@customer.route('/add', methods=["GET"])
+def add_row():
+
+    date = datetime.now().strftime('%Y-%m-%d')
+    row = Rooms(date, 1, 1, 1, 1, 1)
+    db.session.add(row)
+    db.session.commit()
+
+
+
+
+    return 'OK'

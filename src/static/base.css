@@ -18,6 +18,9 @@
     padding-left: 2rem;
     padding-right: 2rem;
   }
+  .mt-md-38 {
+    margin-top: 0rem;
+  }
 }
 
 .badge-color {
@@ -34,4 +37,8 @@ td {
 td.min {
   width: 3rem;
   white-space: nowrap;
+}
+
+.mt-md-38 {
+  margin-top: 1.9rem;
 }
