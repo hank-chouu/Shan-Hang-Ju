@@ -21,6 +21,9 @@
   .mt-md-38 {
     margin-top: 0rem;
   }
+  .d-flex-block div {
+    width: 100%;
+  }
 }
 
 .badge-color {
@@ -41,4 +44,9 @@ td.min {
 
 .mt-md-38 {
   margin-top: 1.9rem;
+}
+
+.d-flex-block {
+  display: flex;
+  flex-wrap: wrap;
 }

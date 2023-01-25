@@ -6,12 +6,12 @@
 
 <div class="my-md-4">&nbsp;</div>
 
-<div class="row mb-md-5">
+<div class="row mb-5">
   <div class="col-md-10 offset-md-1">
     <h2 class="fw-bold text-center mb-md-3">線上訂房</h2>
     <div class="my-md-4">&nbsp;</div>
     <div class="card rounded-2 shadow">
-      <div class="cardbody p-4 w-100">
+      <div class="cardbody pt-4 px-4 w-100">
         <form class="row" method="post" autocomplete="off">
           <div class="col-md-3 my-md-3 my-1">
             <label for="check_in_date" class="form-label">入住日期</label>
@@ -34,29 +34,106 @@
                 <i class="bi bi-search"></i> 查詢</button>
           </div>
         </form>
+        <div class="mt-2">
+          <p class="fw-light fst-italic">*若需預定的日期不連貫，或是需訂購一間以上的房間，請分次下訂單，謝謝</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
-  
 
+{% if result == True %}
+{% if available == False %}
+<div class="row mb-5">
+  <div class="col-md-8 offset-md-2">
+    <div class="card rounded-0">
+      <div class="cardbody p-4 w-100">
+        <p class="lh-lg">{{ info[0] }} - {{ info[1] }} 查詢結果：<br>此房型目前日期沒有空房，請查詢其他日期，謝謝～</p>        
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+{% for num, room in info.items() %}
+<div class="row mb-3">
+  <div class="col-md-8 offset-md-2">
+    <div class="card rounded-0">
+      <div class="cardbody px-3 py-4 w-100">
+        <!-- <div class="d-flex align-items-center">
+          <div class="col-md-3">
+            <img src="static/rooms/{{ room['img'] }}" class="img-fluid ">
+          </div>
+          <div class="col-md-9 ms-4">
+            <p class="my-2 fs-3">{{ room['name'] }}</p  >
+            <p class="mt-2">{{ room['dates'][0] }} - {{ room['dates'][1] }}<br>共 {{ room['dates'][2] }} 晚</p>
+            <p >總金額： NT$<span class="num">{{ room['amount'] }}</span> 元</p>
+          </div>
+        </div> -->
+        
+        <div class="row">
+          <div class="col-md-4">
+            <img src="static/rooms/{{ room['img'] }}" class="img-fluid">
+          </div>
+          <div class="col-md-4">
+            <p class="mt-2 fs-3">{{ room['name'] }}</p>
+            <p class="mt-4">{{ room['dates'][0] }} - {{ room['dates'][1] }}<br>共 {{ room['dates'][2] }} 晚</p>
+            <p>總金額： NT$<span class="num">{{ room['amount'] }}</span> 元</p>
+          </div>
+          <div class="col-md-4">
+            <div class="fs-3 my-md-3">&nbsp;</div>
+            <ul class="mb-3">
+              <li>提供免費早餐</li>
+              {% if num in ['301', '303', '502'] %}
+              <li>可加人/加床</li>
+              {% else %}
+              <li>不可加人/加床</li>
+              {% endif %}
+            </ul>
+            <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="search" value="search">
+              立即下訂</button>
+          </div>
 
-
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endif %}
 
 {% endblock %}
 
 {% block script %}
 <script>
-// prevent form re-submitting 
+
+// prevent re-submitting form when refresh or hit previous page
 if ( window.history.replaceState ) {
-        window.history.replaceState( null, null, window.location.href );
-    }
+    window.history.replaceState( null, null, window.location.href );
+}
+
+window.onload = function() {  
+  number_format();
+}
+
+// function
+
+function number_format() {
+
+  const nums_elements = document.getElementsByClassName('num');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+}
+
+// datepicker
 
 $( function() {
-    var dateFormat = "mm/dd/yy",
+    var dateFormat = "yy/mm/dd",
       from = $( "#check_in_date" )
         .datepicker({           
-          defaultDate: "+1w",
+          dateFormat: 'yy/mm/dd',
           changeMonth: true,
           changeYear: true, 
           numberOfMonths: 1, 
@@ -66,7 +143,7 @@ $( function() {
           to.datepicker( "option", "minDate", getDate( this ) );
         }),
       to = $( "#check_out_date" ).datepicker({
-        defaultDate: "+1w",
+        dateFormat: 'yy/mm/dd',
         changeMonth: true,
         changeYear: true, 
         numberOfMonths: 1, 
@@ -77,9 +154,10 @@ $( function() {
       });
  
     function getDate( element ) {
-      var date;
+      var date;      
       try {
-        date = $.datepicker.parseDate( dateFormat, element.value );
+        date = $.datepicker.parseDate( dateFormat, element.value )
+        date.setDate(date.getDate() + 1);// time range at least 1 day
       } catch( error ) {
         date = null;
       }
