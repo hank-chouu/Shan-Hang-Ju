@@ -58,25 +58,14 @@
 <div class="row mb-3">
   <div class="col-md-8 offset-md-2">
     <div class="card rounded-0">
-      <div class="cardbody px-3 py-4 w-100">
-        <!-- <div class="d-flex align-items-center">
-          <div class="col-md-3">
-            <img src="static/rooms/{{ room['img'] }}" class="img-fluid ">
-          </div>
-          <div class="col-md-9 ms-4">
-            <p class="my-2 fs-3">{{ room['name'] }}</p  >
-            <p class="mt-2">{{ room['dates'][0] }} - {{ room['dates'][1] }}<br>共 {{ room['dates'][2] }} 晚</p>
-            <p >總金額： NT$<span class="num">{{ room['amount'] }}</span> 元</p>
-          </div>
-        </div> -->
-        
+      <div class="cardbody px-3 py-4 w-100">        
         <div class="row">
           <div class="col-md-4">
             <img src="static/rooms/{{ room['img'] }}" class="img-fluid">
           </div>
           <div class="col-md-4">
             <p class="mt-2 fs-3">{{ room['name'] }}</p>
-            <p class="mt-4">{{ room['dates'][0] }} - {{ room['dates'][1] }}<br>共 {{ room['dates'][2] }} 晚</p>
+            <p class="mt-4">{{ room['dates'][0] }} - {{ room['dates'][1] }}<br>一間 共 {{ room['dates'][2] }} 晚</p>
             <p>總金額： NT$<span class="num">{{ room['amount'] }}</span> 元</p>
           </div>
           <div class="col-md-4">
@@ -89,10 +78,15 @@
               <li>不可加人/加床</li>
               {% endif %}
             </ul>
-            <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="search" value="search">
-              立即下訂</button>
+            <form method="post">
+              <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="booking" value="booking">
+                立即下訂</button>
+              <input hidden type="text" value="{{ num }}" name="room_num">
+              <input hidden type="text" value="{{ room['dates'][0] }}" name="check_in_booking">
+              <input hidden type="text" value="{{ room['dates'][0] }}" name="check_out_booking">
+              <input hidden type="text" value="{{ room['amount'] }}" name="amount">
+            </form>
           </div>
-
         </div>
       </div>
     </div>

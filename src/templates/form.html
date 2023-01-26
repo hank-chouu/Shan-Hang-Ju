@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{%block title %} 訂房訂單填寫 - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+<h2 class="fw-bold text-center mb-md-5">線上訂房</h2>
+<form class="row mb-5">
+  <div class="col-md-4 my-2">
+    <div class="card p-3 rounded-0">
+      <div class="cardtitle">
+        <h4 class="fw-bold my-3" style="color: grey;">訂單資訊</h4>
+      </div>
+      <div class="cardbody">
+        <div class="row">
+          <div class="col-6 text-start">
+            <span class="fw-lighter">入住日期<br></span>2023-01-27
+          </div>
+          <div class="col-6 text-end">
+            <span class="fw-lighter">退房日期<br></span>2023-01-28
+          </div>
+        </div>
+        <hr>
+        <h5 class="my-3">房型：後車巷（雙人房）</h5>
+        <div class="ms-1">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="breakfast" name='breakfast' checked>
+            <label class="form-check-label" for="breakfast">
+              訂購免費早餐
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="add_bed" name="add_bed">
+            <label class="form-check-label" for="add_bed">
+              加一人/加一床（+300 元）
+            </label>
+          </div>   
+          <hr>
+          <div class="text-end">
+            總金額：3,000 元
+          </div>       
+        </div>
+
+      </div>
+    </div>
+    <div class="card rounded-0 p-3 my-3">
+      <div class="cardtitle">
+        <h4 class="fw-bold my-3" style="color: grey;">付款資訊</h4>
+      </div>
+      <div class="cardbody">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>款項</th>
+              <th>金額</th>
+              <th>付款方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>訂金</th>
+              <th>NT1,400</th>
+              <th>轉帳匯款</th>
+            </tr>
+            <tr>
+              <th>尾款</th>
+              <th>NT1,600</th>
+              <th>入住時以現金付清</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+  </div>
+  <div class="col-md-8 my-2">
+    <div class="card p-3 rounded-0">
+      <div class="cardtitle">
+        <h5 class="fw-bold my-3" style="color: grey;">房客基本資料</h5>
+      </div>
+      <div class="cardbody">
+        
+      </div>
+    </div>
+  </div>
+</form>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+window.onload = function() {  
+  number_format();
+}
+
+// function
+
+function number_format() {
+
+  const nums_elements = document.getElementsByClassName('num');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+}
+
+
+</script>
+{% endblock %}

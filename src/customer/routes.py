@@ -168,7 +168,7 @@ def reservation():
 
                 # generate available room info
                 if len(query) == 0:
-                    allLogger.warn('Date-Room database is runned out.')
+                    allLogger.warn('Room database has ran out of records.')
                     flash('資料庫內部異常，無法查詢', category='error')
                     return render_template('reservation.html', result = False)
                 elif len(available_rooms) == 0:
@@ -195,8 +195,25 @@ def reservation():
                 return render_template('reservation.html', result = True, 
                                                            available = is_available, 
                                                            info = info)
+
+        elif request.form.get('booking') == 'booking':
+            room_num = request.form.get('room_num')
+            check_in = request.form.get('check_in_booking')
+            check_out = request.form.get('check_out_booking')
+            amount = request.form.get('amount')
+
+            return redirect(url_for('customer.form'))
+
                         
     return render_template('reservation.html', result = False)
+
+
+@customer.route('/form', methods=['GET', 'POST'])
+def form():
+
+
+
+    return render_template('form.html')
 
 
 @customer.route('/add', methods=["GET"])
