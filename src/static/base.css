@@ -13,25 +13,13 @@
     overflow: hidden;
   }
 
-@media (max-width: 767px) {  
-  .px-md-custom {      
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-  .mt-md-38 {
-    margin-top: 0rem;
-  }
-  .d-flex-block div {
-    width: 100%;
-  }
-}
+
 
 .badge-color {
   background-color: #68944e;
   color:white;
 }
 
-/* table { width: inherit !important; } */
 
 td {
   width: auto;
@@ -46,7 +34,23 @@ td.min {
   margin-top: 1.9rem;
 }
 
-.d-flex-block {
-  display: flex;
-  flex-wrap: wrap;
+.w-75-responsive {
+  width: 75%;
+}
+
+
+@media (max-width: 767px) {  
+  .px-md-custom {      
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .mt-md-38 {
+    margin-top: 0rem;
+  }
+  .d-flex-block div {
+    width: 100%;
+  }
+  .w-75-responsive {
+    width: 100%;
+  }
 }

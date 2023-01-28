@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="my-md-4">&nbsp;</div>
+<div class="my-md-4 my-2">&nbsp;</div>
 
 <div class="row mb-5">
   <div class="col-md-10 offset-md-1">
@@ -29,7 +29,7 @@
               <option value="4">四人房</option>
             </select>
           </div>
-          <div class="col-md-3 my-md-3 my-1">
+          <div class="col-md-3 my-3">
             <button class="btn w-100 mt-md-38" type="submit" style="background-color: #68944e; color: white;" name="search" value="search">
                 <i class="bi bi-search"></i> 查詢</button>
           </div>
@@ -42,8 +42,11 @@
   </div>
 </div>
 
+
+
 {% if result == True %}
 {% if available == False %}
+<h2 class="fw-bold text-center my-3">查詢結果</h2>
 <div class="row mb-5">
   <div class="col-md-8 offset-md-2">
     <div class="card rounded-0">
@@ -54,6 +57,7 @@
   </div>
 </div>
 {% else %}
+<h2 class="fw-bold text-center my-3">查詢結果</h2>
 {% for num, room in info.items() %}
 <div class="row mb-3">
   <div class="col-md-8 offset-md-2">
@@ -95,6 +99,8 @@
 {% endfor %}
 {% endif %}
 {% endif %}
+
+<div class="my-md-2">&nbsp;</div>
 
 {% endblock %}
 

@@ -197,23 +197,38 @@ def reservation():
                                                            info = info)
 
         elif request.form.get('booking') == 'booking':
+
+            # below parameter are sent by hidden inputs
+            # basically won't mess up
             room_num = request.form.get('room_num')
             check_in = request.form.get('check_in_booking')
             check_out = request.form.get('check_out_booking')
-            amount = request.form.get('amount')
+            total = int(request.form.get('amount'))
 
-            return redirect(url_for('customer.form'))
+            return redirect(url_for('customer.form', room_num = room_num, 
+                                                     check_in = check_in, 
+                                                     check_out = check_out, 
+                                                     total = total))
 
                         
     return render_template('reservation.html', result = False)
 
 
-@customer.route('/form', methods=['GET', 'POST'])
-def form():
+@customer.route('/form?room_num=<string:room_num>&check_in=<string:check_in>&check_out=<string:check_out>&total=<int:total>', methods=['GET', 'POST'])
+def form(room_num, check_in, check_out, total):
 
+    # send parameters to form
+    info = {}
+    info['room_num'] = room_num
+    info['name'] = names[room_num]
+    info['check_in'] = check_in
+    info['check_out'] = check_out
+    info['total'] = total
 
+    info['deposit'] = round(total * 0.3 / 100) * 100
+    info['final'] = total - info['deposit']
 
-    return render_template('form.html')
+    return render_template('form.html', info=info)
 
 
 @customer.route('/add', methods=["GET"])

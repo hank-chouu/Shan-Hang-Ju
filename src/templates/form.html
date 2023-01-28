@@ -6,46 +6,48 @@
 
 <div class="my-md-4">&nbsp;</div>
 
-<h2 class="fw-bold text-center mb-md-5">線上訂房</h2>
-<form class="row mb-5">
-  <div class="col-md-4 my-2">
-    <div class="card p-3 rounded-0">
+<h2 class="fw-bold text-center">線上訂房</h2>
+<form class="row mb-4" method="post">
+  <div class="col-md-4 offset-md-1 my-3">
+    <!-- order info card -->
+    <div class="card p-3 rounded-0 mb-3">
       <div class="cardtitle">
         <h4 class="fw-bold my-3" style="color: grey;">訂單資訊</h4>
       </div>
       <div class="cardbody">
         <div class="row">
           <div class="col-6 text-start">
-            <span class="fw-lighter">入住日期<br></span>2023-01-27
+            <span class="fw-lighter">入住日期<br></span>{{ info['check_in'] }}
           </div>
           <div class="col-6 text-end">
-            <span class="fw-lighter">退房日期<br></span>2023-01-28
+            <span class="fw-lighter">退房日期<br></span>{{ info['check_out'] }}
           </div>
         </div>
-        <hr>
-        <h5 class="my-3">房型：後車巷（雙人房）</h5>
+        {% if info['room_num'] in ['301', '303', '502'] %}         
+        <hr> 
+        {% endif %}        
+        <h5 class="my-3">房型：{{ info['name'] }}</h5>
         <div class="ms-1">
+          {% if info['room_num'] in ['301', '303', '502'] %}         
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="breakfast" name='breakfast' checked>
-            <label class="form-check-label" for="breakfast">
-              訂購免費早餐
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="add_bed" name="add_bed">
+            <input class="form-check-input" type="checkbox" id="add_bed" name="add_bed">
             <label class="form-check-label" for="add_bed">
-              加一人/加一床（+300 元）
+              加一人/加一床（+500 元）
             </label>
-          </div>   
+          </div>  
+          {% endif %}
           <hr>
-          <div class="text-end">
-            總金額：3,000 元
+          <div class="d-flex">
+            <div class="flex-grow-1">&nbsp;</div>
+            <div>總金額：</div>
+            <div class="num" id="total">{{ info['total'] }}</div>
+            <div>&nbsp;元</div>
           </div>       
         </div>
-
       </div>
     </div>
-    <div class="card rounded-0 p-3 my-3">
+    <!-- payment info card -->
+    <div class="card rounded-0 p-3">
       <div class="cardtitle">
         <h4 class="fw-bold my-3" style="color: grey;">付款資訊</h4>
       </div>
@@ -60,32 +62,111 @@
           </thead>
           <tbody>
             <tr>
-              <th>訂金</th>
-              <th>NT1,400</th>
-              <th>轉帳匯款</th>
+              <td>訂金</th>
+              <td>NT<span class="num" id="deposit">{{ info['deposit'] }}</span></th>
+              <td>轉帳匯款</th>
             </tr>
             <tr>
-              <th>尾款</th>
-              <th>NT1,600</th>
-              <th>入住時以現金付清</th>
+              <td>尾款</th>
+              <td>NT<span class="num" id="final">{{ info['final'] }}</span></th>
+              <td>入住時以現金付清</th>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
-    
+    </div>    
   </div>
-  <div class="col-md-8 my-2">
+
+  <div class="col-md-6 my-3">
     <div class="card p-3 rounded-0">
       <div class="cardtitle">
-        <h5 class="fw-bold my-3" style="color: grey;">房客基本資料</h5>
+        <h4 class="fw-bold my-3" style="color: grey;">房客基本資料</h4>
       </div>
       <div class="cardbody">
-        
+        <!-- name -->
+        <div class="mb-4 mt-3">
+          <label for="name" class="form-label ms-1"><span style="color:red">* </span>姓氏</label>
+          <input type="text" id="name" name="name" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請輸入您的姓名" required>
+        </div>
+        <!-- gender -->
+        <div class="mb-4">
+          <div class="ms-1"><span style="color: red;">* </span>性別</div>
+          <select class="form-select w-50 ms-2 mt-2" name="chek_in_time">
+            <option value="1500" selected>男</option>
+            <option value="1530">女</option>
+          </select>
+        </div>
+        <!-- phone number -->
+        <div class="mb-4">
+          <label for="phone" class="form-label ms-1"><span style="color:red">* </span>電話號碼</label>
+          <input type="text" id="phone" name="phone" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="例：091234567" required>
+        </div>
+        <!-- email -->
+        <div class="mb-4">
+          <label for="name" class="form-label ms-1"><span style="color:red">* </span>電子信箱（寄發確認信件）</label>
+          <input type="email" id="name" name="name" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請輸入有效的電子信箱" required>
+        </div>
+        <!-- check in time -->
+        <div class="mb-4">
+          <div class="ms-1"><span style="color: red;">* </span>預估抵達時間</div>
+          <select class="form-select w-50 ms-2 mt-2" name="chek_in_time">
+            <option value="15:00" selected>15:00</option>
+            <option value="15:30">15:30</option>
+            <option value="16:00">16:00</option>
+            <option value="16:30">16:30</option>
+            <option value="17:00">17:00</option>
+            <option value="17:30">17:30</option>
+            <option value="18:00">18:00</option>
+            <option value="18:30">18:30</option>
+            <option value="19:00">19:00</option>
+            <option value="19:30">19:30</option>
+            <option value="20:00">20:00</option>
+            <option value="20:30">20:30</option>
+            <option value="21:00">21:00</option>
+            <option value="21:30">21:30</option>
+            <option value="22:00">22:00</option>
+          </select>
+        </div>
+        <!-- parking lot  -->
+        <div class="mb-4">
+          <div class="ms-1"><span style="color: red;">* </span>是否需停車位</div>
+          <select class="form-select w-50 ms-2 mt-2" name="parking">
+            <option value="no" selected>否</option>
+            <option value="yes">是</option>
+          </select>
+        </div>
+        <!-- breakfast -->
+        <div class="mb-4">
+          <div class="ms-1"><span style="color: red;">* </span>特色早餐（無須加價）</div>
+          <select class="form-select w-50 ms-2 mt-2" name="breakfast">
+            <option value="no" selected>否</option>
+            <option value="yes">是</option>
+          </select>
+        </div>
+        <!-- invite code -->
+        <div class="mb-4">
+          <label for="invite" class="form-label ms-1"><span style="color:red">* </span>管家邀請碼</label>
+          <input type="text" id="invite" name="invite" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請向管家索取邀請碼，方可訂房" required>
+        </div>
+        <!-- special needs -->
+        <div class="mb-5">
+          <label for="special_need" class="form-label ms-1">特殊需求</label>
+          <textarea id="special_need" name="special_need" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請注意！旅宿並不保證滿足您所提出的需求，將視現場情況而定，謝謝配合。"></textarea>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-9 px-4">
+            <button class="btn text-center w-100" type="submit" style="background-color: #68944e; color: white;" name="send" value="send">
+            送出訂單</button>
+          </div>
+        </div>
+
       </div>
     </div>
+    
+
   </div>
 </form>
+
 
 {% endblock %}
 
@@ -112,6 +193,31 @@ function number_format() {
 
 }
 
+// add bed
+
+$('#add_bed').on('change',function(){
+  if ($("#add_bed").prop('checked')) {
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) + 500;    
+    deposit = Number(deposit) + 150;    
+    final = Number(final) + 350;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  } else {
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) - 500;    
+    deposit = Number(deposit) - 150;    
+    final = Number(final) - 350;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  }
+});
 
 </script>
 {% endblock %}
