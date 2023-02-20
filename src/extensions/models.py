@@ -47,19 +47,24 @@ class Booking(db.Model):
     special_needs = db.Column(db.String(200), nullable = True)
     created_on = db.Column(db.DateTime, nullable = False)
 
+    total = db.Column(db.Integer, nullable = False)
+    deposit = db.Column(db.Integer, nullable = False)
+    final = db.Column(db.Integer, nullable = False)
+
     deposit_paid = db.Column(db.Integer, nullable = False)
     final_paid = db.Column(db.Integer, nullable = False)
 
     deleted = db.Column(db.Integer, nullable = False)
 
-    def __init__(self, id, client_info, booking_info):
+    def __init__(self, id, client_info, booking_info, amounts):
 
         self.id = id
+        # client info
         self.name = client_info[0]
         self.gender = client_info[1]
         self.phone = client_info[2]
         self.email = client_info[3]
-
+        # booking info
         self.room_num = booking_info[0]
         self.check_in = booking_info[1]
         self.check_out = booking_info[2]
@@ -69,7 +74,10 @@ class Booking(db.Model):
         self.breakfast = booking_info[6]
         self.special_needs = booking_info[7]
         self.created_on = booking_info[8]
-
+        # payment info
+        self.total = amounts[0]
+        self.deposit = amounts[1]
+        self.final = amounts[2]
         self.deposit_paid, self.final_paid, self.deleted = 0, 0, 0
 
 

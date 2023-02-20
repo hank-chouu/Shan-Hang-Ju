@@ -2,13 +2,14 @@ from flask import Flask
 from flask_login import LoginManager
 import os
 from dotenv import load_dotenv
-
+from flask_mail import Mail
 
 
 
 from src.customer.routes import customer
 from src.admin.routes import admin
 from src.extensions.models import User, db
+from src.extensions.email import mail
 
 
 def create_app():
@@ -41,6 +42,19 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
+
+    # email configs
+
+
+    app.config.update(
+        MAIL_SERVER='smtp.gmail.com',
+        MAIL_PROT=587,
+        MAIL_USE_TLS=True,
+        MAIL_USERNAME=os.getenv('MAIL_USERNAME'),
+        MAIL_PASSWORD=os.getenv('MAIL_PASSWORD')
+    )
+
+    mail.init_app(app)
 
     ## blueprints   
 

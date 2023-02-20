@@ -1,13 +1,15 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from datetime import datetime, timezone, timedelta
-from markupsafe import escape
 # import pytz
 import pandas as pd
 from sqlalchemy import func
+from flask_mail import Mail, Message
+import os
 
 
 from src.extensions.models import db, Rooms, Booking
 from src.extensions.logger import allLogger
+from src.extensions.email import mail, create_msg
 
 
 
@@ -227,8 +229,11 @@ def form(room_num, check_in, check_out, total):
     info['check_out'] = check_out
     info['total'] = total
 
-    info['deposit'] = round(total * 0.3 / 100) * 100
-    info['final'] = total - info['deposit']
+    deposit = round(total * 0.3 / 100) * 100
+    final = total - deposit
+
+    info['deposit'] = deposit
+    info['final'] = final
 
     check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
     check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
@@ -273,12 +278,13 @@ def form(room_num, check_in, check_out, total):
         db.session.commit()
         allLogger.info(''.join(['Room ', room_num, ' is booked from ', check_in, ' to ', check_out, '.']))
 
-        created_at = datetime.now(tz)
-
         # add new booking record
+
+        created_at = datetime.now(tz)
 
         client_info = [name, gender, phone, email]
         booking_info = [room_num, check_in, check_out, add_bed, arrival, parking, breakfast, special_needs, created_at]
+        amounts = [total, deposit, final]
 
         max_id = db.session.query(func.max(Booking.id)).scalar()
 
@@ -286,13 +292,23 @@ def form(room_num, check_in, check_out, total):
             new_id = 1
         else:
             new_id = max_id + 1
-        new_booking_record = Booking(new_id, client_info, booking_info)
+        new_booking_record = Booking(new_id, client_info, booking_info, amounts)
         db.session.add(new_booking_record)
         db.session.commit()
         allLogger.info(''.join(['Booking record created. Client: ', name, ' Check in: ', check_in, '.']))
 
         # sending confirmation mail
 
+        mail_info = {}
+        mail_info['room'] = names[room_num]
+        mail_info['check_in'] = check_in
+        mail_info['check_out'] = check_out
+        mail_info['total'] = total
+        mail_info['deposit'] = deposit
+        mail_info['final'] = final
+
+        msg = create_msg(email, mail_info)
+        mail.send(msg)
 
         # succeed and completed
         # redirect to complete page
@@ -355,3 +371,23 @@ def drop():
 
     return 'drop all'
 
+@customer.route('/send-a-mail', methods = ['GET'])
+def send_mail():
+    msg_title = 'Hello It is Flask-Mail'
+    #  寄件者，若參數有設置就不需再另外設置
+    msg_sender = os.getenv('MAIL_USERNAME')
+    #  收件者，格式為list，否則報錯
+    msg_recipients = ['hengtse.me@gmail.com']
+    #  郵件內容
+    msg_body = 'Hey, I am mail body!'
+    #  也可以使用html
+    #  msg_html = '<h1>Hey,Flask-mail Can Use HTML</h1>'
+    msg = Message(msg_title,
+                  sender=msg_sender,
+                  recipients=msg_recipients)
+    msg.body = msg_body
+    #  msg.html = msg_html
+    
+    #  mail.send:寄出郵件
+    mail.send(msg)
+    return 'You Send Mail by Flask-Mail Success!!'
