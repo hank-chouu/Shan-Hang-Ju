@@ -2,9 +2,6 @@ from flask import Flask
 from flask_login import LoginManager
 import os
 from dotenv import load_dotenv
-from flask_mail import Mail
-
-
 
 from src.customer.routes import customer
 from src.admin.routes import admin
@@ -44,8 +41,7 @@ def create_app():
         db.create_all()
 
     # email configs
-
-
+    
     app.config.update(
         MAIL_SERVER='smtp.gmail.com',
         MAIL_PROT=587,
