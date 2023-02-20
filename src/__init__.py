@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 import os
+from dotenv import load_dotenv
 
 
 
@@ -14,6 +15,9 @@ def create_app():
     
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.urandom(16).hex()
+
+    # load .env
+    load_dotenv()
 
     ## login 
     
@@ -32,7 +36,7 @@ def create_app():
     ## database
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:I227j7lZsmd33wn86f8J@containers-us-west-179.railway.app:6784/railway"
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     
     db.init_app(app)
     with app.app_context():
