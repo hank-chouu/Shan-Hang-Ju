@@ -1,9 +1,5 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-import logging
-import os
-import pytz
-from datetime import datetime
 
 ## users
 
@@ -31,61 +27,51 @@ class Rooms(db.Model):
         self.room_501 = room_501
         self.room_502 = room_502
 
+class Booking(db.Model):
+    
+    __tablename__ = 'booking'
+    id = db.Column(db.Integer, primary_key = True)
 
-## logger
+    name = db.Column(db.String(20), nullable = False)
+    gender = db.Column(db.String(10), nullable = False)
+    phone = db.Column(db.String(20), nullable = False)
+    email = db.Column(db.String(50), nullable = False)
 
-class Formatter(logging.Formatter):
-    """override logging.Formatter to use an aware datetime object"""
+    room_num = db.Column(db.String(10), nullable = False)
+    check_in = db.Column(db.String(20), nullable = False)
+    check_out = db.Column(db.String(20), nullable = False)
+    add_bed = db.Column(db.Integer, nullable = False)
+    arrival = db.Column(db.String(10), nullable = False)
+    parking = db.Column(db.Integer, nullable = False)
+    breakfast = db.Column(db.Integer, nullable = False)
+    special_needs = db.Column(db.String(200), nullable = True)
+    created_on = db.Column(db.DateTime, nullable = False)
 
-    def converter(self, timestamp):
-        # Create datetime in UTC
-        dt = datetime.fromtimestamp(timestamp, tz=pytz.UTC)
-        # Change datetime's timezone
-        return dt.astimezone(pytz.timezone('Asia/Taipei'))
+    deposit_paid = db.Column(db.Integer, nullable = False)
+    final_paid = db.Column(db.Integer, nullable = False)
 
-    def formatTime(self, record, datefmt=None):
-        dt = self.converter(record.created)
-        if datefmt:
-            s = dt.strftime(datefmt)
-        else:
-            try:
-                s = dt.isoformat(timespec='milliseconds')
-            except TypeError:
-                s = dt.isoformat()
-        return s
+    deleted = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, id, client_info, booking_info):
+
+        self.id = id
+        self.name = client_info[0]
+        self.gender = client_info[1]
+        self.phone = client_info[2]
+        self.email = client_info[3]
+
+        self.room_num = booking_info[0]
+        self.check_in = booking_info[1]
+        self.check_out = booking_info[2]
+        self.add_bed = booking_info[3]
+        self.arrival = booking_info[4]
+        self.parking = booking_info[5]
+        self.breakfast = booking_info[6]
+        self.special_needs = booking_info[7]
+        self.created_on = booking_info[8]
+
+        self.deposit_paid, self.final_paid, self.deleted = 0, 0, 0
 
 
-def logger():
-    #1.setup log path and create log directory
-    logName = 'Program.log'
-    logDir = 'log'
-    logPath = logDir + '/' + logName
 
-    #create log directory 
-    os.makedirs(logDir,exist_ok=True)
 
-    #2.create logger, then setLevel
-    global allLogger
-    allLogger = logging.getLogger('allLogger')
-    allLogger.setLevel(logging.DEBUG)
-
-    #3.create file handler, then setLevel
-    #create file handler
-    fileHandler = logging.FileHandler(logPath,mode='w')
-    fileHandler.setLevel(logging.INFO)
-
-    #4.create stram handler, then setLevel
-    #create stream handler
-    streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.INFO)
-
-    #5.create formatter, then handler setFormatter
-    AllFormatter = Formatter("%(asctime)s - [line:%(lineno)d] - %(levelname)s: %(message)s", '%Y-%m-%d %H:%M:%S')
-    fileHandler.setFormatter(AllFormatter)
-    streamHandler.setFormatter(AllFormatter)
-
-    #6.logger addHandler
-    allLogger.addHandler(fileHandler)
-    allLogger.addHandler(streamHandler)
-
-logger()

@@ -6,6 +6,9 @@
 
 <div class="my-md-4">&nbsp;</div>
 
+<!-- save total days over here -->
+<input hidden type="text" value="{{ info['total_days'] }}" id="total_days">
+
 <h2 class="fw-bold text-center">線上訂房</h2>
 <form class="row mb-4" method="post">
   <div class="col-md-4 offset-md-1 my-3">
@@ -32,7 +35,7 @@
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="add_bed" name="add_bed">
             <label class="form-check-label" for="add_bed">
-              加一人/加一床（+500 元）
+              加一人/加一床（+500 元 / 一晚）
             </label>
           </div>  
           {% endif %}
@@ -85,15 +88,15 @@
       <div class="cardbody">
         <!-- name -->
         <div class="mb-4 mt-3">
-          <label for="name" class="form-label ms-1"><span style="color:red">* </span>姓氏</label>
+          <label for="name" class="form-label ms-1"><span style="color:red">* </span>姓名</label>
           <input type="text" id="name" name="name" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請輸入您的姓名" required>
         </div>
         <!-- gender -->
         <div class="mb-4">
           <div class="ms-1"><span style="color: red;">* </span>性別</div>
-          <select class="form-select w-50 ms-2 mt-2" name="chek_in_time">
-            <option value="1500" selected>男</option>
-            <option value="1530">女</option>
+          <select class="form-select w-50 ms-2 mt-2" name="gender">
+            <option value="男" selected>男</option>
+            <option value="女">女</option>
           </select>
         </div>
         <!-- phone number -->
@@ -104,12 +107,12 @@
         <!-- email -->
         <div class="mb-4">
           <label for="name" class="form-label ms-1"><span style="color:red">* </span>電子信箱（寄發確認信件）</label>
-          <input type="email" id="name" name="name" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請輸入有效的電子信箱" required>
+          <input type="email" id="email" name="email" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請輸入有效的電子信箱" required>
         </div>
-        <!-- check in time -->
+        <!-- arrival time -->
         <div class="mb-4">
           <div class="ms-1"><span style="color: red;">* </span>預估抵達時間</div>
-          <select class="form-select w-50 ms-2 mt-2" name="chek_in_time">
+          <select class="form-select w-50 ms-2 mt-2" name="arrival_time">
             <option value="15:00" selected>15:00</option>
             <option value="15:30">15:30</option>
             <option value="16:00">16:00</option>
@@ -121,10 +124,6 @@
             <option value="19:00">19:00</option>
             <option value="19:30">19:30</option>
             <option value="20:00">20:00</option>
-            <option value="20:30">20:30</option>
-            <option value="21:00">21:00</option>
-            <option value="21:30">21:30</option>
-            <option value="22:00">22:00</option>
           </select>
         </div>
         <!-- parking lot  -->
@@ -151,19 +150,16 @@
         <!-- special needs -->
         <div class="mb-5">
           <label for="special_need" class="form-label ms-1">特殊需求</label>
-          <textarea id="special_need" name="special_need" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請注意！旅宿並不保證滿足您所提出的需求，將視現場情況而定，謝謝配合。"></textarea>
+          <textarea id="special_need" name="special_needs" class="form-control ms-1 w-75-responsive border-0 border-bottom" placeholder="請注意！旅宿並不保證滿足您所提出的需求，將視現場情況而定，謝謝配合。"></textarea>
         </div>
         <div class="row mb-3">
           <div class="col-md-9 px-4">
             <button class="btn text-center w-100" type="submit" style="background-color: #68944e; color: white;" name="send" value="send">
             送出訂單</button>
           </div>
-        </div>
-
+        </div>        
       </div>
     </div>
-    
-
   </div>
 </form>
 
@@ -196,13 +192,14 @@ function number_format() {
 // add bed
 
 $('#add_bed').on('change',function(){
-  if ($("#add_bed").prop('checked')) {
+  var total_days = Number($('#total_days').val());
+  if ($("#add_bed").prop('checked')) {    
     var total = $('#total').text().replace(/,/g, '');
     var deposit = $('#deposit').text().replace(/,/g, '');
     var final = $('#final').text().replace(/,/g, '');    
-    total = Number(total) + 500;    
-    deposit = Number(deposit) + 150;    
-    final = Number(final) + 350;
+    total = Number(total) + 500 * total_days;    
+    deposit = Number(deposit) + 150 * total_days;    
+    final = Number(final) + 350 * total_days;
     $('#total').text(total.toLocaleString());
     $('#deposit').text(deposit.toLocaleString());
     $('#final').text(final.toLocaleString());
@@ -210,9 +207,9 @@ $('#add_bed').on('change',function(){
     var total = $('#total').text().replace(/,/g, '');
     var deposit = $('#deposit').text().replace(/,/g, '');
     var final = $('#final').text().replace(/,/g, '');    
-    total = Number(total) - 500;    
-    deposit = Number(deposit) - 150;    
-    final = Number(final) - 350;
+    total = Number(total) - 500 * total_days;    
+    deposit = Number(deposit) - 150 * total_days;    
+    final = Number(final) - 350 * total_days;
     $('#total').text(total.toLocaleString());
     $('#deposit').text(deposit.toLocaleString());
     $('#final').text(final.toLocaleString());

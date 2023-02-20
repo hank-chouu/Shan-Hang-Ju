@@ -3,9 +3,11 @@ from datetime import datetime, timezone, timedelta
 from markupsafe import escape
 # import pytz
 import pandas as pd
+from sqlalchemy import func
 
 
-from src.extensions.models import db, Rooms, allLogger
+from src.extensions.models import db, Rooms, Booking
+from src.extensions.logger import allLogger
 
 
 
@@ -190,7 +192,7 @@ def reservation():
                         room_detail['name'] = names[room]
                         room_detail['dates'] = [check_in.replace('/', '-'), check_out.replace('/', '-'), len(date_pricing)]
                         room_detail['amount'] = date_pricing[room].sum()
-                        info[room] = room_detail
+                        info[room] = room_detail                    
 
                 return render_template('reservation.html', result = True, 
                                                            available = is_available, 
@@ -228,34 +230,128 @@ def form(room_num, check_in, check_out, total):
     info['deposit'] = round(total * 0.3 / 100) * 100
     info['final'] = total - info['deposit']
 
+    check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
+    check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+    info['total_days'] = (check_out_dt.date() - check_in_dt.date()).days
+
+    if request.method == 'POST':
+
+        name = request.form.get('name')
+        gender = request.form.get('gender')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+
+        arrival = request.form.get('arrival_time')
+        parking = 0
+        if request.form.get('parking') == 'yes':
+            parking = 1
+        breakfast = 0
+        if request.form.get('breakfast') == 'yes':
+            breakfast = 1
+        add_bed = 0
+        if request.form.get('add_bed'):
+            add_bed = 1 
+        invite_code = request.form.get('invite')
+        special_needs = request.form.get('special_needs')
+
+        # check
+        # invite code and valid phone number
+        if '' in [name, phone, email, invite_code]:
+            flash('資料未填齊全', category='error')
+            return render_template('form.html', info=info)
+
+        # find the room, change status
+        
+        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
+        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+        current_date_dt = check_in_dt
+        while (current_date_dt < check_out_dt):
+            db.session.query(Rooms).\
+                filter(Rooms.date == current_date_dt).\
+                update({'room_'+ room_num: 0})
+            current_date_dt += timedelta(days = 1)
+        db.session.commit()
+        allLogger.info(''.join(['Room ', room_num, ' is booked from ', check_in, ' to ', check_out, '.']))
+
+        created_at = datetime.now(tz)
+
+        # add new booking record
+
+        client_info = [name, gender, phone, email]
+        booking_info = [room_num, check_in, check_out, add_bed, arrival, parking, breakfast, special_needs, created_at]
+
+        max_id = db.session.query(func.max(Booking.id)).scalar()
+
+        if max_id is None:
+            new_id = 1
+        else:
+            new_id = max_id + 1
+        new_booking_record = Booking(new_id, client_info, booking_info)
+        db.session.add(new_booking_record)
+        db.session.commit()
+        allLogger.info(''.join(['Booking record created. Client: ', name, ' Check in: ', check_in, '.']))
+
+        # sending confirmation mail
+
+
+        # succeed and completed
+        # redirect to complete page
+        return redirect(url_for('customer.home'))
+
     return render_template('form.html', info=info)
 
 
-@customer.route('/add', methods=["GET"])
-def add_row():
+@customer.route('/manual-addition', methods=["GET"])
+def by_me():
 
-    today_date = '2023/01/22'
-    today_date = datetime.strptime(today_date, '%Y/%m/%d').replace(tzinfo=tz)
+    # add rows
 
-    for i in range(10):
+    start_date = '2023/02/01'
+    start_date = datetime.strptime(start_date, '%Y/%m/%d').replace(tzinfo=tz)
 
-        row = Rooms(today_date, 1, 1, 1, 1, 1)
+    for i in range(180):
+        row = Rooms(start_date, 1, 1, 1, 1, 1)
         db.session.add(row)
-        today_date = today_date + timedelta(days=1)
+        start_date = start_date + timedelta(days=1)
     db.session.commit()
-    # check_in = '2023/01/24'
-    # check_out = '2023/01/25'
-    # check_in = datetime.strptime(check_in, '%Y/%m/%d').replace(tzinfo=tz)
-    # check_out = datetime.strptime(check_out, '%Y/%m/%d').replace(tzinfo=tz)
 
-    # # print(today_date)
-    # query = db.session.query(Rooms).filter(
-    #     Rooms.date >= check_in, 
-    #     Rooms.date < check_out
-    # ).all()
-    # for row in query:
-    #     print(row.date.replace(tzinfo=tz))
-    # db.session.commit()
+    # updates
 
+    # check_in = '2023-01-29'
+    # check_out = '2023-01-30'
+    # room_num = '302'
+    # check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
+    # check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+    # current_date_dt = check_in_dt
+    # while (current_date_dt < check_out_dt):
+    #     db.session.query(Rooms).\
+    #         filter(Rooms.date == current_date_dt).\
+    #         update({'room_'+ room_num: 1})
+    #     current_date_dt += timedelta(days = 1)
+
+    # drop all
+
+    # db.drop_all()
 
     return 'OK'
+
+
+
+
+@customer.route('/update')
+def uppdate():
+
+
+
+    return 'Update'
+
+
+@customer.route('/drop-all')
+def drop():
+
+
+    db.drop_all()
+    
+
+    return 'drop all'
+
