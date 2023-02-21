@@ -23,6 +23,21 @@ def img_indexing(room_num, img_amount:int):
         idx[i] = ''.join([str(room_num), '_', str(i+2), '.jpg'])
     return idx
 
+def row2dict(row):
+    d = {}
+    for column in row.__table__.columns:
+        d[column.name] = str(getattr(row, column.name))
+
+    return d
+
+def int_to_yes_no_dict_item(row_dict, keys:list):
+    for key in keys:
+        if row_dict[key] == 0:
+            row_dict[key] = '否'
+        else:
+            row_dict[key] = '是'
+        
+
 tz = timezone(timedelta(hours=+8))
 
 pricing = {'2 beds':['NT4,100', 'NT2,000', 'NT2,300', 'NT4,100'], 
@@ -300,6 +315,7 @@ def form(room_num, check_in, check_out, total):
         # sending confirmation mail
 
         mail_info = {}
+        mail_info['order_id'] = new_id
         mail_info['room'] = names[room_num]
         mail_info['check_in'] = check_in
         mail_info['check_out'] = check_out
@@ -312,9 +328,22 @@ def form(room_num, check_in, check_out, total):
 
         # succeed and completed
         # redirect to complete page
-        return redirect(url_for('customer.home'))
+        return redirect(url_for('customer.confirmed', order_id = new_id))
 
     return render_template('form.html', info=info)
+
+
+@customer.route('/confirmed?order_id=<int:order_id>', methods = ['GET'])
+def confirmed(order_id):
+
+    order = db.session.query(Booking).filter(Booking.id == order_id).first()
+    order = row2dict(order)
+    order['room'] = names[order['room_num']]
+    int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
+    if order['special_needs'] == '':
+        order['special_needs'] = '無'
+
+    return render_template('confirmation.html', order = order)
 
 
 @customer.route('/manual-addition', methods=["GET"])

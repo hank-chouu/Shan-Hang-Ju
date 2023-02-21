@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{%block title %} 訂單已確認！ - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+
+<div class="mx-auto text-center">
+  <img src="/static/checked.jpg" style="height: 4rem;">
+</div>
+<h2 class="fw-bold text-center my-3">訂單已確認！</h2>
+<div class="row mb-4">
+  <div class="col-md-6 offset-md-3">
+    <div class="card p-3 rounded-0">
+      <div class="crad-title">
+        <h4 class="fw-bold my-3 ms-3" style="color: grey;">訂單資訊</h4>
+      </div>
+      <div class="card-body">
+        <p class="lh-lg">訂單編號：{{ order['id'] }}<br>旅客姓名：{{ order['name'] }}
+          <br>連絡電話：{{ order['phone'] }}
+        </p>
+        <hr>
+        <p class="lh-lg">訂購房型：{{ order['room']}}<br>是否加床：{{ order['add_bed']}}<br>
+          入住日期：{{ order['check_in'] }}<br>退房日期：{{ order['check_out'] }}<br>
+          預計抵達時間：{{ order['arrival'] }}<br>是否需停車位：{{ order['parking'] }}<br>
+          早餐：{{ order['breakfast'] }}<br>特殊需求：{{ order['special_needs']}}          
+        </p>
+        <hr>
+        <p class="lh-lg">您這次訂單款項一共 NT<span class="num">{{ order['total'] }}</span> 元，<br>
+          請在三日內將訂金 NT<span class="num">{{order['deposit'] }}</span> 元匯至管家帳戶，<br>
+          並透過臉書粉專或來電告知，<br>
+          再請於入住時繳清餘款共 NT<span class="num">{{ order['final'] }}</span> 元。
+        <p>
+        <p class="lh-lg">匯款銀行：鹿港信用合作社 （165）<br>
+          銀行帳號：00019152248820<br>
+          匯款戶名：黃淑汝
+        </p>
+        <p>謝謝您！期待與您在鹿港相見！</p>
+        <div class="mt-3" style="display: flex; justify-content: center;">
+          <a class="btn btn-lg text-center" style="background-color: #68944e; color: white;" href="/home">回首頁</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+window.onload = function() {  
+  number_format();
+}
+
+// function
+
+function number_format() {
+
+  const nums_elements = document.getElementsByClassName('num');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+}
+
+// add bed
+
+$('#add_bed').on('change',function(){
+  var total_days = Number($('#total_days').val());
+  if ($("#add_bed").prop('checked')) {    
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) + 500 * total_days;    
+    deposit = Number(deposit) + 150 * total_days;    
+    final = Number(final) + 350 * total_days;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  } else {
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) - 500 * total_days;    
+    deposit = Number(deposit) - 150 * total_days;    
+    final = Number(final) - 350 * total_days;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  }
+});
+
+</script>
+{% endblock %}
