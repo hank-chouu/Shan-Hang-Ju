@@ -7,7 +7,7 @@ from src.customer.routes import customer
 from src.admin.routes import admin
 from src.extensions.models import User, db
 from src.extensions.email import mail
-
+from src.extensions.logger import allLogger
 
 def create_app():
     
@@ -40,6 +40,8 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    allLogger.info('Database initialized.')
+
     # email configs
     
     app.config.update(
@@ -51,6 +53,7 @@ def create_app():
     )
 
     mail.init_app(app)
+    allLogger.info('Mail server initialized. ')
 
     ## blueprints   
 
