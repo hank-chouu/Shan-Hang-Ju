@@ -39,7 +39,6 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
-
     allLogger.info('Database initialized.')
 
     # email configs

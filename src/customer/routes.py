@@ -337,6 +337,7 @@ def form(room_num, check_in, check_out, total):
 def confirmed(order_id):
 
     order = db.session.query(Booking).filter(Booking.id == order_id).first()
+    # if order is not none:
     order = row2dict(order)
     order['room'] = names[order['room_num']]
     int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
