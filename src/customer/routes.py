@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, abort
 from datetime import datetime, timezone, timedelta
 # import pytz
 import pandas as pd
@@ -209,7 +209,8 @@ def reservation():
                         room_detail['name'] = names[room]
                         room_detail['dates'] = [check_in.replace('/', '-'), check_out.replace('/', '-'), len(date_pricing)]
                         room_detail['amount'] = date_pricing[room].sum()
-                        info[room] = room_detail                    
+                        info[room] = room_detail
+
 
                 return render_template('reservation.html', result = True, 
                                                            available = is_available, 
@@ -224,6 +225,9 @@ def reservation():
             check_out = request.form.get('check_out_booking')
             total = int(request.form.get('amount'))
 
+            session['access_to_form'] = True            
+
+
             return redirect(url_for('customer.form', room_num = room_num, 
                                                      check_in = check_in, 
                                                      check_out = check_out, 
@@ -235,6 +239,9 @@ def reservation():
 
 @customer.route('/form?room_num=<string:room_num>&check_in=<string:check_in>&check_out=<string:check_out>&total=<int:total>', methods=['GET', 'POST'])
 def form(room_num, check_in, check_out, total):
+
+    if not session['access_to_form']:
+        abort(404)
 
     # send parameters to form
     info = {}
@@ -326,6 +333,9 @@ def form(room_num, check_in, check_out, total):
         msg = create_msg(email, mail_info)
         mail.send(msg)
 
+        session['access_to_confirm'] = True
+        session['access_to_form'] = False
+
         # succeed and completed
         # redirect to complete page
         return redirect(url_for('customer.confirmed', order_id = new_id))
@@ -335,6 +345,9 @@ def form(room_num, check_in, check_out, total):
 
 @customer.route('/confirmed?order_id=<int:order_id>', methods = ['GET'])
 def confirmed(order_id):
+
+    if not session['access_to_confirm']:
+        abort(404)
 
     order = db.session.query(Booking).filter(Booking.id == order_id).first()
     # if order is not none:
