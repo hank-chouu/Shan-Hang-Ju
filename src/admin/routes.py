@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 from src.extensions.models import db, Admin, User, Booking
 from src.extensions.logger import allLogger, abort_msg
+from src.customer.routes import names
 
 admin = Blueprint('admin', __name__)
 
@@ -81,8 +82,11 @@ def login():
 # @login_required
 def bookings():
 
-    try:
+    # future addition:
+    # show all
+    # find certain row from some date
 
+    try:
         today = datetime.now(tz) - timedelta(days=1) 
         query = db.session.query(Booking).filter(
             Booking.check_in >= today, 
@@ -100,3 +104,21 @@ def bookings():
     except Exception as e:
         allLogger.error(str(e))
         abort_msg(e)
+
+@admin.route('/bookings/<int:id>', methods = ['GET', 'POST'])
+# @login_required
+def detailed_booking(id):
+
+    query = db.session.query(Booking).filter(Booking.id == id).first()
+    data = row2dict(query)
+    data['room'] = names[data['room_num']][:3]
+    data['check_in'] = (data['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+    data['check_out'] = (data['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+    int_to_yes_no_dict_item(data, ['add_bed', 'parking', 'breakfast'])
+    if data['special_needs'] == '':
+        data['special_needs'] = '無'
+
+    
+
+    return render_template('booking_detail.html', data = data)
+

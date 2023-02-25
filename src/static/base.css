@@ -38,6 +38,19 @@ td.min {
   width: 75%;
 }
 
+.w-25-responsive {
+  width: 25%;
+}
+
+.btn-confirm {
+  background-color: rgb(165, 165, 165);
+  color: white;
+}
+.btn-confirm:hover {
+  background-color: grey;
+  color: white;
+}
+
 
 @media (max-width: 767px) {  
   .px-md-custom {      
@@ -52,5 +65,8 @@ td.min {
   }
   .w-75-responsive {
     width: 100%;
+  }
+  .w-25-responsive {
+    width: 75%;
   }
 }

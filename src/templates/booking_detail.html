@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{%block title %} 訂單編號 #{{ data['id'] }} - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+<h2 class="fw-bold text-center my-3">訂單編號 #{{ data['id'] }}</h2>
+<div class="row mb-4">
+  <div class="col-md-6 offset-md-3">
+    <div class="card p-3 rounded-0">
+      <div class="crad-title">
+        <h4 class="fw-bold my-3 ms-3" style="color: grey;">訂單資訊</h4>
+      </div>
+      <div class="card-body">
+        <p class="lh-lg">旅客姓名：{{ data['name'] }}<br>
+          連絡電話：{{ data['phone'] }}<br>
+          電子信箱：{{ data['email'] }}
+        </p>
+        <hr>
+        <p class="lh-lg">訂購房型：{{ data['room']}}（{{ data['room_num'] }}）<br>是否加床：{{ data['add_bed']}}<br>
+          入住日期：{{ data['check_in'] }}<br>退房日期：{{ data['check_out'] }}<br>
+          預計抵達時間：{{ data['arrival'] }}<br>是否需停車位：{{ data['parking'] }}<br>
+          早餐：{{ data['breakfast'] }}<br>特殊需求：{{ data['special_needs']}}          
+        </p>
+        <hr>
+        <p class="lh-lg">
+          訂金：NT${{ data['deposit']}} 元 
+          {% if data['deposit_paid'] == 1 %}
+          <span class="badge bg-success">已繳清</span><br>
+          {% else %}
+          <span class="badge bg-danger">未繳清</span><br>
+          {% endif %}
+          尾款：NT${{ data['final']}} 元 
+          {% if data['final_paid'] == 1 %}
+          <span class="badge bg-success">已繳清</span><br>
+          {% else %}
+          <span class="badge bg-danger">未繳清</span><br>
+          {% endif %}
+          總金額：NT${{ data['deposit']}} 元 
+          {% if data['deposit_paid'] == 1 and data['final_paid'] == 1 %}
+          <span class="badge bg-success">已繳清</span><br>
+          {% else %}
+          <span class="badge bg-danger">未繳清</span><br>
+          {% endif %}
+        <p>
+        <div>
+          {% if data['deposit_paid'] == 0 %}
+          <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#deposit_paid">訂金已繳</a>
+          {% else %}
+          <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#deposit_unpaid">訂金未繳</a>
+          {% endif %}
+          {% if data['deposit_paid'] == 0 %}
+          <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#final_paid">尾款已繳</a>
+          {% else %}
+          <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#final_unpaid">尾款未繳</a>
+          {% endif %}
+          <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#delete">刪除訂單</a>
+        </div>        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modals -->
+<div class="modal fade" id="deposit_paid" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        更新訂單狀態為「訂金已繳清」？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <button type="submit" class="btn btn-dark" name="deposit_paid" value="paid">確認</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deposit_unpaid" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        更新訂單狀態為「訂金未繳清」？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <button type="submit" class="btn btn-dark" name="deposit_unpaid" value="unpaid">確認</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="final_paid" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        更新訂單狀態為「尾款已繳清」？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <button type="submit" class="btn btn-dark" name="final_paid" value="paid">確認</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="final_unpaid" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        更新訂單狀態為「尾款未繳清」？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <button type="submit" class="btn btn-dark" name="final_unpaid" value="unpaid">確認</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        是否要刪除訂單？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <button type="submit" class="btn btn-dark" name="delete" value="delete">確認</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+window.onload = function() {  
+  number_format();
+}
+
+// function
+
+function number_format() {
+
+  const nums_elements = document.getElementsByClassName('num');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+}
+
+// add bed
+
+$('#add_bed').on('change',function(){
+  var total_days = Number($('#total_days').val());
+  if ($("#add_bed").prop('checked')) {    
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) + 500 * total_days;    
+    deposit = Number(deposit) + 150 * total_days;    
+    final = Number(final) + 350 * total_days;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  } else {
+    var total = $('#total').text().replace(/,/g, '');
+    var deposit = $('#deposit').text().replace(/,/g, '');
+    var final = $('#final').text().replace(/,/g, '');    
+    total = Number(total) - 500 * total_days;    
+    deposit = Number(deposit) - 150 * total_days;    
+    final = Number(final) - 350 * total_days;
+    $('#total').text(total.toLocaleString());
+    $('#deposit').text(deposit.toLocaleString());
+    $('#final').text(final.toLocaleString());
+  }
+});
+
+</script>
+{% endblock %}
