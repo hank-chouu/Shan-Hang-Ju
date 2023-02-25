@@ -4,10 +4,30 @@
 
 {% block content %}
 
-<div class="row mb-5">  
+<div class="row mt-3 mb-5">  
   <div class="col-md-10 offset-md-1">
-    <h2 class="fw-bold mb-md-3">管理訂單</h2>
+    <h2 class="fw-bold my-3">管理訂單</h2>
     <hr>
+    <div class="table-responsive">
+      <table class="table table-striped" data-pagination="true" data-search="true" data-search-align="left">
+        <thead>
+          <tr>
+            <th>編號</th>
+            <th>姓名</th>
+            <th>入住日期</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.check_in }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>

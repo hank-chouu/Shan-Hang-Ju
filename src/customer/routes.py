@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from datetime import datetime, timezone, timedelta
+import pytz
 import pandas as pd
 from sqlalchemy import func
 
@@ -20,7 +21,7 @@ def img_indexing(room_num, img_amount:int):
 def row2dict(row):
     d = {}
     for column in row.__table__.columns:
-        d[column.name] = str(getattr(row, column.name))
+        d[column.name] = getattr(row, column.name)
 
     return d
 
@@ -307,10 +308,6 @@ def form(room_num, check_in, check_out, total):
                 return render_template('form.html', info=info)
 
             # find the room, change status
-            
-            check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
-            check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
-
             ## to check if the room is still available
 
             query = db.session.query(Rooms).filter(
@@ -336,7 +333,7 @@ def form(room_num, check_in, check_out, total):
             created_at = datetime.now(tz)
 
             client_info = [name, gender, phone, email]
-            booking_info = [room_num, check_in, check_out, add_bed, arrival, parking, breakfast, special_needs, created_at]
+            booking_info = [room_num, check_in_dt, check_out_dt, add_bed, arrival, parking, breakfast, special_needs, created_at]
             amounts = [total, deposit, final]
 
             max_id = db.session.query(func.max(Booking.id)).scalar()
@@ -385,14 +382,17 @@ def form(room_num, check_in, check_out, total):
 def confirmed(order_id):
         
     try:
+
         if 'access_to_confirm' not in session.keys():
             return render_template('404.html')
         elif session['access_to_confirm'] != order_id:
             return render_template('404.html')
         order = db.session.query(Booking).filter(Booking.id == order_id).first()
-        # if order is not none:
         order = row2dict(order)
         order['room'] = names[order['room_num']]
+        order['check_in'] = (order['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        order['check_out'] = (order['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        print(order['check_in'], order['check_out'])
         int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
         if order['special_needs'] == '':
             order['special_needs'] = '無'

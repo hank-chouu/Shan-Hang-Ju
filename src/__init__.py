@@ -20,8 +20,8 @@ def create_app():
     ## login 
     
     login_manager = LoginManager()
-    # login_manager.login_view = 'pages.login'
-    # login_manager.login_message = '請登入以進行更多操作'
+    login_manager.login_view = 'admin.login'
+    login_manager.login_message = '請登入以進行更多操作'
     login_manager.init_app(app)      
     
     @login_manager.user_loader  

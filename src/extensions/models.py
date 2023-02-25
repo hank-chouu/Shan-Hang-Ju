@@ -38,8 +38,8 @@ class Booking(db.Model):
     email = db.Column(db.String(50), nullable = False)
 
     room_num = db.Column(db.String(10), nullable = False)
-    check_in = db.Column(db.String(20), nullable = False)
-    check_out = db.Column(db.String(20), nullable = False)
+    check_in = db.Column(db.DateTime, nullable = False)
+    check_out = db.Column(db.DateTime, nullable = False)
     add_bed = db.Column(db.Integer, nullable = False)
     arrival = db.Column(db.String(10), nullable = False)
     parking = db.Column(db.Integer, nullable = False)
