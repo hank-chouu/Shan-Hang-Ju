@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{%block title %} 登入後台 - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+<div class="row mb-5">
+  <h2 class="fw-bold text-center mb-md-3">管理員登入</h2>
+  <div class="col-md-6 offset-md-3">
+    <div class="my-md-3">&nbsp;</div>
+    <div class="card rounded-2 shadow">
+      <div class="cardbody py-4 px-4 w-100">
+        <form method="post" autocomplete="off">
+          <div class="mb-3 mt-3 row">
+            <label for="username" class="col-sm-2 col-form-label">用戶名</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="username" name="username" placeholder="shanhangju">
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="pw" class="col-sm-2 col-form-label">密碼</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" id="pw" name="pw">
+            </div>
+          </div>          
+          <div class="my-3 row">
+            <div class="col-sm-10 offset-sm-2  text-center">
+              <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="login" value="login">
+                登入</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

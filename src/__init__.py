@@ -15,9 +15,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.urandom(16).hex()
 
     # load .env
-    load_dotenv()
-
-    
+    load_dotenv()    
 
     ## login 
     
