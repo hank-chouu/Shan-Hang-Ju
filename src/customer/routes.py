@@ -3,13 +3,9 @@ from datetime import datetime, timezone, timedelta
 import pandas as pd
 from sqlalchemy import func
 
-
-
-from src.extensions.models import db, Rooms, Booking
+from src.extensions.models import db, Rooms, Booking, Admin
 from src.extensions.logger import allLogger, abort_msg
 from src.extensions.email import mail, create_msg
-
-
 
 ## functions, variables and objects
 
@@ -44,6 +40,8 @@ pricing = {'2 beds':['NT4,100', 'NT2,000', 'NT2,300', 'NT4,100'],
 
 names = {'301':'杉行街（四人房）', '302':'君子巷（雙人房）', '303':'後車巷（雙人房）',
          '501':'桂花巷（雙人房）', '502':'九曲巷（三人房）'}
+
+
 
 ## routes
 
@@ -246,8 +244,13 @@ def form(room_num, check_in, check_out, total):
         if 'access_to_form' not in session.keys():
             return render_template('404.html')
         elif session['access_to_form'] != ''.join([room_num, check_in, check_out]):
-            flash('請重新查詢', category='error')
+            flash('頁面已失效！請重新查詢', category='error')
             return redirect(url_for('customer.reservation'))
+        
+        # get invite code
+
+        admin_info = db.session.query(Admin).filter_by(id = 1).first()
+        invite_code = admin_info.invite_code
 
         # send parameters to form
         info = {}
@@ -288,13 +291,19 @@ def form(room_num, check_in, check_out, total):
                 total += 500 * total_days
                 deposit += 150 * total_days
                 final += 350 * total_days
-            invite_code = request.form.get('invite')
+            invite_code_form = request.form.get('invite')
             special_needs = request.form.get('special_needs')
 
             # check
             # invite code and valid phone number
-            if '' in [name, phone, email, invite_code]:
+            if '' in [name, phone, email, invite_code_form]:
                 flash('資料未填齊全', category='error')
+                return render_template('form.html', info=info)
+            elif len(phone) != 10:
+                flash('電話號碼格式有誤，請輸入您的手機號碼共 10 碼', category='error')
+                return render_template('form.html', info=info)
+            elif invite_code_form != invite_code:
+                flash('邀請碼錯誤，請向管家索取正確的邀請碼', category='error')
                 return render_template('form.html', info=info)
 
             # find the room, change status

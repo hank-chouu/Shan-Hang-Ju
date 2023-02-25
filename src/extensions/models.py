@@ -80,6 +80,15 @@ class Booking(db.Model):
         self.final = amounts[2]
         self.deposit_paid, self.final_paid, self.deleted = 0, 0, 0
 
+class Admin(db.Model):
+
+    __tablename__ = 'admin'
+
+    id = db.Column(db.Integer, primary_key = True)
+    invite_code = db.Column(db.String(20), nullable = False)
+    username = db.Column(db.String(20), nullable = False)
+    pw = db.Column(db.String(70), nullable = False)
+
 
 
 
