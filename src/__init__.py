@@ -17,6 +17,8 @@ def create_app():
     # load .env
     load_dotenv()
 
+    
+
     ## login 
     
     login_manager = LoginManager()
@@ -59,4 +61,5 @@ def create_app():
     app.register_blueprint(customer, url_prefix = '/')
     app.register_blueprint(admin, url_prefix = '/admin')
 
+    
     return app

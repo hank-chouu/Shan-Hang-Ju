@@ -1,10 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, session, abort
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from datetime import datetime, timezone, timedelta
-# import pytz
 import pandas as pd
 from sqlalchemy import func
-from flask_mail import Mail, Message
-import os
+
 
 
 from src.extensions.models import db, Rooms, Booking
@@ -123,9 +121,10 @@ def rooms_each(room_num):
                                                     add = 1, 
                                                     pricing = pricing['3 beds'])
         else: 
-            return 'PAGE NOT FOUND. ROOM NUMBER IS NOT VALID. '
+            return render_template('404.html')
         
     except Exception as e:
+        allLogger.error(str(e))
         abort_msg(e)
 
 ## reservation
@@ -235,6 +234,7 @@ def reservation():
         return render_template('reservation.html', result = False)
     
     except Exception as e:
+        allLogger.error(str(e))
         abort_msg(e)
 
 # form
@@ -243,8 +243,11 @@ def reservation():
 def form(room_num, check_in, check_out, total):
 
     try:
-        if not session['access_to_form']:
-            abort(404)
+        if 'access_to_form' not in session.keys():
+            return render_template('404.html')
+        elif not session['access_to_form']:
+            flash('請重新查詢', category='error')
+            return redirect(url_for('customer.reservation'))
 
         # send parameters to form
         info = {}
@@ -262,7 +265,8 @@ def form(room_num, check_in, check_out, total):
 
         check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
         check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
-        info['total_days'] = (check_out_dt.date() - check_in_dt.date()).days
+        total_days = (check_out_dt.date() - check_in_dt.date()).days
+        info['total_days'] = total_days
 
         if request.method == 'POST':
 
@@ -280,7 +284,10 @@ def form(room_num, check_in, check_out, total):
                 breakfast = 1
             add_bed = 0
             if request.form.get('add_bed'):
-                add_bed = 1 
+                add_bed = 1
+                total += 500 * total_days
+                deposit += 150 * total_days
+                final += 350 * total_days
             invite_code = request.form.get('invite')
             special_needs = request.form.get('special_needs')
 
@@ -294,14 +301,26 @@ def form(room_num, check_in, check_out, total):
             
             check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
             check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+
+            ## to check if the room is still available
+
+            query = db.session.query(Rooms).filter(
+                            Rooms.date >= check_in_dt, 
+                            Rooms.date < check_out_dt)            
+            status_list = [getattr(row, "room_" + room_num) for row in query.all()]
+            # if still available, then room's value = 1
+            if sum(status_list) != total_days :
+                flash('您所選擇的房型在此日期已無法選購，請重新下訂', category='error')
+                return redirect(url_for('customer.reservtion'))
+
+            ## change room status
             current_date_dt = check_in_dt
             while (current_date_dt < check_out_dt):
                 db.session.query(Rooms).\
                     filter(Rooms.date == current_date_dt).\
                     update({'room_'+ room_num: 0})
                 current_date_dt += timedelta(days = 1)
-            db.session.commit()
-            allLogger.info(''.join(['Room ', room_num, ' is booked from ', check_in, ' to ', check_out, '.']))
+            db.session.commit()            
 
             # add new booking record
 
@@ -320,7 +339,9 @@ def form(room_num, check_in, check_out, total):
             new_booking_record = Booking(new_id, client_info, booking_info, amounts)
             db.session.add(new_booking_record)
             db.session.commit()
-            allLogger.info(''.join(['Booking record created. Client: ', name, ' Check in: ', check_in, '.']))
+            allLogger.info(''.join(['Booking record created. Order ID: ', str(new_id), '. Client: ', name, '.']))
+            allLogger.info(''.join(['Order ID ', str(new_id), ': room ', room_num, ' is booked from ', check_in, ' to ', check_out, '.']))
+
 
             # sending confirmation mail
 
@@ -336,7 +357,7 @@ def form(room_num, check_in, check_out, total):
             msg = create_msg(email, mail_info)
             mail.send(msg)
 
-            session['access_to_confirm'] = True
+            session['access_to_confirm'] = new_id
             session['access_to_form'] = False
 
             # succeed and completed
@@ -346,6 +367,7 @@ def form(room_num, check_in, check_out, total):
         return render_template('form.html', info=info)
     
     except Exception as e:
+        allLogger.error(str(e))
         abort_msg(e)
 
 # redirect to confirmation after successful reservation
@@ -354,9 +376,10 @@ def form(room_num, check_in, check_out, total):
 def confirmed(order_id):
         
     try:
-        if not session['access_to_confirm']:
-            abort(404)
-
+        if 'access_to_confirm' not in session.keys():
+            return render_template('404.html')
+        elif session['access_to_confirm'] != order_id:
+            return render_template('404.html')
         order = db.session.query(Booking).filter(Booking.id == order_id).first()
         # if order is not none:
         order = row2dict(order)
@@ -368,6 +391,7 @@ def confirmed(order_id):
         return render_template('confirmation.html', order = order)
     
     except Exception as e:
+        allLogger.error(str(e))
         abort_msg(e)
 
         
