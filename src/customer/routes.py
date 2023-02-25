@@ -224,7 +224,7 @@ def reservation():
                 check_out = request.form.get('check_out_booking')
                 total = int(request.form.get('amount'))
 
-                session['access_to_form'] = True
+                session['access_to_form'] = ''.join([room_num, check_in, check_out])
 
                 return redirect(url_for('customer.form', room_num = room_num, 
                                                         check_in = check_in, 
@@ -245,7 +245,7 @@ def form(room_num, check_in, check_out, total):
     try:
         if 'access_to_form' not in session.keys():
             return render_template('404.html')
-        elif not session['access_to_form']:
+        elif session['access_to_form'] != ''.join([room_num, check_in, check_out]):
             flash('請重新查詢', category='error')
             return redirect(url_for('customer.reservation'))
 
