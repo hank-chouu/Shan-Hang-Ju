@@ -90,7 +90,8 @@ def bookings():
         today = datetime.now(tz) - timedelta(days=1) 
         query = db.session.query(Booking).filter(
             Booking.check_in >= today, 
-            Booking.check_out >= today
+            Booking.check_out >= today, 
+            Booking.deleted == 0
         ).order_by(Booking.check_in, Booking.check_out).all()
         data = {}
         for row in query:
@@ -108,17 +109,58 @@ def bookings():
 @admin.route('/bookings/<int:id>', methods = ['GET', 'POST'])
 # @login_required
 def detailed_booking(id):
-
-    query = db.session.query(Booking).filter(Booking.id == id).first()
-    data = row2dict(query)
-    data['room'] = names[data['room_num']][:3]
-    data['check_in'] = (data['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-    data['check_out'] = (data['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-    int_to_yes_no_dict_item(data, ['add_bed', 'parking', 'breakfast'])
-    if data['special_needs'] == '':
-        data['special_needs'] = '無'
-
     
+    try:
 
-    return render_template('booking_detail.html', data = data)
+        if request.method == 'POST':
+            if request.form.get('deposit_paid') == 'paid':
+                db.session.query(Booking).\
+                    filter(Booking.id == id).\
+                    update({'deposit_paid': 1})
+                db.session.commit()
+                allLogger.info(''.join(['Order #', str(id), ' has changed deposit\'s status to \'paid\'.']))
+            elif request.form.get('deposit_unpaid') == 'unpaid':
+                db.session.query(Booking).\
+                    filter(Booking.id == id).\
+                    update({'deposit_paid': 0})
+                db.session.commit()
+                allLogger.info(''.join(['Order #', str(id), ' has changed deposit\'s status to \'unpaid\'.']))
+
+            elif request.form.get('final_paid') == 'paid':
+                db.session.query(Booking).\
+                    filter(Booking.id == id).\
+                    update({'final_paid': 1})
+                db.session.commit()
+                allLogger.info(''.join(['Order #', str(id), ' has changed final\'s status to \'paid\'.']))
+
+            elif request.form.get('final_unpaid') == 'unpaid':
+                db.session.query(Booking).\
+                    filter(Booking.id == id).\
+                    update({'final_paid': 0})
+                db.session.commit()
+                allLogger.info(''.join(['Order #', str(id), ' has changed final\'s status to \'unpaid\'.']))
+
+            elif request.form.get('delete') == 'delete':
+                db.session.query(Booking).\
+                    filter(Booking.id == id).\
+                    update({'delete': 1})
+                db.session.commit()
+                allLogger.info(''.join(['Order #', str(id), ' has changed order\'s status to \'deleted\'.']))
+                return redirect(url_for('admin.bookings'))
+
+        query = db.session.query(Booking).filter(Booking.id == id).first()
+        data = row2dict(query)
+        data['room'] = names[data['room_num']][:3]
+        data['check_in'] = (data['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        data['check_out'] = (data['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        
+        if data['special_needs'] == '':
+            data['special_needs'] = '無' 
+        int_to_yes_no_dict_item(data, ['add_bed', 'parking', 'breakfast'])  
+
+        return render_template('booking_detail.html', data = data)
+    
+    except Exception as e:
+        allLogger.error(str(e))
+        abort_msg(e)
 

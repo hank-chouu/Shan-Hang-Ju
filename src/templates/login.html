@@ -39,3 +39,15 @@
 
 
 {% endblock %}
+
+{% block script %}
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+
+</script>
+{% endblock %}

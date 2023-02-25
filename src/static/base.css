@@ -50,6 +50,10 @@ td.min {
   background-color: grey;
   color: white;
 }
+.btn-confirm:focus {
+  background-color: rgb(165, 165, 165);
+  color: white;
+}
 
 
 @media (max-width: 767px) {  

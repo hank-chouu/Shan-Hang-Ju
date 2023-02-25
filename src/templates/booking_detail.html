@@ -51,15 +51,15 @@
           {% else %}
           <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#deposit_unpaid">訂金未繳</a>
           {% endif %}
-          {% if data['deposit_paid'] == 0 %}
+          {% if data['final_paid'] == 0 %}
           <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#final_paid">尾款已繳</a>
           {% else %}
           <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#final_unpaid">尾款未繳</a>
           {% endif %}
           <a class="btn btn-lg btn-confirm w-25-responsive me-1 my-1" data-bs-toggle="modal" href="#delete">刪除訂單</a>
-        </div>        
+        </div>               
       </div>
-    </div>
+    </div>    
   </div>
 </div>
 
@@ -189,32 +189,7 @@ function number_format() {
 
 }
 
-// add bed
 
-$('#add_bed').on('change',function(){
-  var total_days = Number($('#total_days').val());
-  if ($("#add_bed").prop('checked')) {    
-    var total = $('#total').text().replace(/,/g, '');
-    var deposit = $('#deposit').text().replace(/,/g, '');
-    var final = $('#final').text().replace(/,/g, '');    
-    total = Number(total) + 500 * total_days;    
-    deposit = Number(deposit) + 150 * total_days;    
-    final = Number(final) + 350 * total_days;
-    $('#total').text(total.toLocaleString());
-    $('#deposit').text(deposit.toLocaleString());
-    $('#final').text(final.toLocaleString());
-  } else {
-    var total = $('#total').text().replace(/,/g, '');
-    var deposit = $('#deposit').text().replace(/,/g, '');
-    var final = $('#final').text().replace(/,/g, '');    
-    total = Number(total) - 500 * total_days;    
-    deposit = Number(deposit) - 150 * total_days;    
-    final = Number(final) - 350 * total_days;
-    $('#total').text(total.toLocaleString());
-    $('#deposit').text(deposit.toLocaleString());
-    $('#final').text(final.toLocaleString());
-  }
-});
 
 </script>
 {% endblock %}
