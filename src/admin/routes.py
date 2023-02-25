@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, login_required, UserMixin
 import bcrypt
 
-from src.extensions.models import db, Admin, User
+from src.extensions.models import db, Admin, User, Booking
 from src.extensions.logger import allLogger, abort_msg
 
 admin = Blueprint('admin', __name__)
@@ -46,7 +46,7 @@ def login():
                 login_user(user)
                 flash('登入成功', category='success')
                 allLogger.info('Admin logged in successfully.')
-                return redirect(url_for('admin.orders'))
+                return redirect(url_for('admin.bookings'))
             
         return render_template('login.html')
     
@@ -56,8 +56,13 @@ def login():
 
 
 @login_required
-@admin.route('/orders', methods = ['GET', 'POST'])
-def orders():
+@admin.route('/bookings', methods = ['GET', 'POST'])
+def bookings():
 
+    today = 
 
-    return render_template('orders.html')
+    query = db.query(Booking).filter(
+
+    )
+
+    return render_template('bookings.html')
