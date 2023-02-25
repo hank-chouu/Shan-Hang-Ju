@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_user, login_required, UserMixin
+from flask_login import login_user, login_required
 import bcrypt
 from datetime import datetime, timezone, timedelta
 
@@ -9,6 +9,23 @@ from src.extensions.logger import allLogger, abort_msg
 admin = Blueprint('admin', __name__)
 
 tz = timezone(timedelta(hours=+8))
+
+def row2dict(row):
+    d = {}
+    for column in row.__table__.columns:
+        d[column.name] = getattr(row, column.name)
+
+    return d
+
+def int_to_yes_no_dict_item(row_dict, keys:list):
+    for key in keys:
+        if row_dict[key] == 0:
+            row_dict[key] = '否'
+        else:
+            row_dict[key] = '是'
+
+
+# routes
 
 
 @admin.route('/login', methods = ['GET', 'POST'])
@@ -61,18 +78,22 @@ def login():
 
 
 @admin.route('/bookings', methods = ['GET', 'POST'])
-@login_required
+# @login_required
 def bookings():
 
     try:
 
-        today = datetime.now(tz) - timedelta(days=1)
-        
-
-        data = db.session.query(Booking).filter(
+        today = datetime.now(tz) - timedelta(days=1) 
+        query = db.session.query(Booking).filter(
             Booking.check_in >= today, 
             Booking.check_out >= today
-        ).all()
+        ).order_by(Booking.check_in, Booking.check_out).all()
+        data = {}
+        for row in query:
+            data[row.id] = row2dict(row)
+            data[row.id]['check_in'] = (data[row.id]['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+            data[row.id]['check_out'] = (data[row.id]['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+            int_to_yes_no_dict_item(data[row.id], ['add_bed', 'parking', 'breakfast'])
 
         return render_template('bookings.html', data = data)
     

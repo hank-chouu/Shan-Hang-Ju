@@ -8,21 +8,35 @@
   <div class="col-md-10 offset-md-1">
     <h2 class="fw-bold my-3">管理訂單</h2>
     <hr>
-    <div class="table-responsive">
-      <table class="table table-striped" data-pagination="true" data-search="true" data-search-align="left">
+    <div class="table-responsive px-1">
+      <table class="table table-striped" data-toggle="table" data-pagination="true" data-search="true" data-search-align="left">
         <thead>
           <tr>
-            <th>編號</th>
-            <th>姓名</th>
-            <th>入住日期</th>
+            <th data-align="center" data-searchable="true" data-sortable="true">編號</th>
+            <th data-align="center" data-searchable="true">姓名</th>
+            <th data-align="center" data-searchable="true">房號</th>
+            <th data-align="center">入住日期</th>
+            <th data-align="center">退房日期</th>
+            <th data-align="center">加床</th>
+            <th data-align="center">抵達時間</th>
+            <th data-align="center">停車位</th>
+            <th data-align="center">早餐</th>
+            <th data-align="center">更多...</th>
           </tr>
         </thead>
         <tbody>
-          {% for row in data %}
-          <tr>
-            <td>{{ row.id }}</td>
-            <td>{{ row.name }}</td>
-            <td>{{ row.check_in }}</td>
+          {% for row in data.values() %}
+          <tr style="height: 50px;">
+            <td>{{ row['id'] }}</td>
+            <td>{{ row['name'] }}</td>
+            <td>{{ row['room_num'] }}</td>            
+            <td>{{ row['check_in'] }}</td>
+            <td>{{ row['check_out'] }}</td>
+            <td>{{ row['add_bed'] }}</td>
+            <td>{{ row['arrival'] }}</td>
+            <td>{{ row['parking'] }}</td>
+            <td>{{ row['breakfast'] }}</td>
+            <td><a style="color:black" href="/admin/bookings/{{ row['id'] }}"><i class="bi bi-arrow-right-circle"></i></a></td>
           </tr>
           {% endfor %}
         </tbody>

@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from datetime import datetime, timezone, timedelta
-import pytz
 import pandas as pd
 from sqlalchemy import func
 
@@ -392,7 +391,6 @@ def confirmed(order_id):
         order['room'] = names[order['room_num']]
         order['check_in'] = (order['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
         order['check_out'] = (order['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-        print(order['check_in'], order['check_out'])
         int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
         if order['special_needs'] == '':
             order['special_needs'] = '無'
