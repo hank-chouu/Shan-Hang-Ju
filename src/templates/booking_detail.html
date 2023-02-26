@@ -6,9 +6,13 @@
 
 <div class="my-md-4">&nbsp;</div>
 
-<h2 class="fw-bold text-center my-3">訂單編號 #{{ data['id'] }}</h2>
+
 <div class="row mb-4">
   <div class="col-md-6 offset-md-3">
+    <div class="d-flex" style="justify-content: center; position: relative;">
+      <h2 class="fw-bold text-center my-3">訂單編號 #{{ data['id'] }}</h2>
+      <a class="btn" style="position: absolute; right: 0px; bottom: 0.6rem; background-color: #68944e; color: white;" href="/admin/bookings">回前頁</a>
+    </div>
     <div class="card p-3 rounded-0">
       <div class="crad-title">
         <h4 class="fw-bold my-3 ms-3" style="color: grey;">訂單資訊</h4>
@@ -26,19 +30,19 @@
         </p>
         <hr>
         <p class="lh-lg">
-          訂金：NT${{ data['deposit']}} 元 
+          訂金：NT$<span class="num">{{ data['deposit']}}</span> 元 
           {% if data['deposit_paid'] == 1 %}
           <span class="badge bg-success">已繳清</span><br>
           {% else %}
           <span class="badge bg-danger">未繳清</span><br>
           {% endif %}
-          尾款：NT${{ data['final']}} 元 
+          尾款：NT$<span class="num">{{ data['final']}}</span> 元 
           {% if data['final_paid'] == 1 %}
           <span class="badge bg-success">已繳清</span><br>
           {% else %}
           <span class="badge bg-danger">未繳清</span><br>
           {% endif %}
-          總金額：NT${{ data['deposit']}} 元 
+          總金額：NT$<span class="num">{{ data['deposit']}}</span> 元 
           {% if data['deposit_paid'] == 1 and data['final_paid'] == 1 %}
           <span class="badge bg-success">已繳清</span><br>
           {% else %}

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, logout_user
 import bcrypt
 from datetime import datetime, timezone, timedelta
 
@@ -24,6 +24,31 @@ def int_to_yes_no_dict_item(row_dict, keys:list):
             row_dict[key] = '否'
         else:
             row_dict[key] = '是'
+
+def is_legal_password(password):
+    # define a legal pw
+    # 1. contains 1 uppercase letter and 1 lowercase letter
+    # 2. contains 1 digit
+    # 3. at least have length of 8
+
+    if len(password) < 8:
+        return False
+
+    check_1 = False
+    check_2 = False
+    check_3 = False
+    for char in password:
+        if char.isupper():
+            check_1 = True
+        if char.islower():
+            check_2 = True
+        if char.isdigit():
+            check_3 = True
+
+    if check_1 and check_2 and check_3:
+        return True
+    else:
+        return False 
 
 
 # routes
@@ -65,7 +90,7 @@ def login():
             if username_correct and pw_correct:
                 user = User()
                 user.id = 'admin'
-                login_user(user)
+                login_user(user, remember=True)
                 flash('登入成功', category='success')
                 allLogger.info('Admin logged in successfully.')
                 return redirect(url_for('admin.bookings'))
@@ -143,8 +168,9 @@ def detailed_booking(id):
             elif request.form.get('delete') == 'delete':
                 db.session.query(Booking).\
                     filter(Booking.id == id).\
-                    update({'delete': 1})
+                    update({'deleted': 1})
                 db.session.commit()
+                flash('成功刪除訂單編號 #' + str(id), category='success')
                 allLogger.info(''.join(['Order #', str(id), ' has changed order\'s status to \'deleted\'.']))
                 return redirect(url_for('admin.bookings'))
 
@@ -164,3 +190,75 @@ def detailed_booking(id):
         allLogger.error(str(e))
         abort_msg(e)
 
+
+@admin.route('/settings', methods=['GET', 'POST'])
+# @login_required
+def settings():
+
+    try:
+        admin_info = db.session.query(Admin).filter_by(id = 1).first()
+        invite_code = admin_info.invite_code
+
+        if request.method == 'POST':
+
+            if request.form.get('submit_invite') == 'submit':
+
+                if request.form.get('invite') == '':
+                    flash('輸入有誤，請再試一次', category='error')
+                    return render_template('settings.html', invite_code = invite_code)
+
+
+                new_invite_code = request.form.get('invite')
+                db.session.query(Admin).\
+                    filter(Admin.id == 1).\
+                    update({'invite_code': new_invite_code})
+                db.session.commit()
+                invite_code = new_invite_code
+                allLogger.info('Invite code has changed into \'' + new_invite_code + '\'.')
+                flash('成功修改管家邀請碼')
+
+            elif request.form.get('submit_pw') == 'submit':
+
+                if request.form.get('old_pw') == '' or request.form.get('new_pw') == '' or request.form.get('new_pw_confirm') == '':
+                    flash('輸入有誤，請再試一次', category='error')
+                    return render_template('settings.html', invite_code = invite_code)
+
+                old_pw = admin_info.pw.encode('utf-8')
+                old_pw_input = request.form.get('old_pw').encode('utf-8')
+                
+                if not bcrypt.checkpw(old_pw_input, old_pw):                    
+                    flash('舊密碼輸入有誤，請再試一次', category='error')
+                    return render_template('settings.html', invite_code = invite_code)
+                
+                new_pw = request.form.get('new_pw')
+                new_pw_confirm = request.form.get('new_pw_confirm')
+
+                if not is_legal_password(new_pw):
+                    flash('新密碼不是有效的密碼，請再試一次', category='error')
+                    return render_template('settings.html', invite_code = invite_code)
+                
+                if new_pw != new_pw_confirm:
+                    flash('新密碼前後輸入不一致，請再試一次', category='error')
+                    return render_template('settings.html', invite_code = invite_code)
+                
+                new_pw = new_pw.encode('utf-8')
+                hashed_pw = bcrypt.hashpw(new_pw, bcrypt.gensalt(10))
+                hashed_pw = hashed_pw.decode('utf-8')
+
+                db.session.query(Admin).\
+                    filter(Admin.id == 1).\
+                    update({'pw': hashed_pw})
+                db.session.commit()
+                allLogger.info('Admin\'s password has changed.')
+                flash('成功修改管理員密碼')
+
+        return render_template('settings.html', invite_code = invite_code)
+    except Exception as e:
+        allLogger.error(str(e))
+        abort_msg(e)
+
+
+@admin.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    return redirect(url_for('customer.home'))

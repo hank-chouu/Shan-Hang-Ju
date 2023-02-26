@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{%block title %} 後台設定 - 杉行居 {% endblock title %}
+
+{% block content %}
+
+<div class="my-md-4">&nbsp;</div>
+
+
+<div class="row mb-4">
+  <div class="col-md-6 offset-md-3">
+    <div class="d-flex" style="justify-content: center; position: relative;">
+      <h2 class="fw-bold text-center my-3">設定</h2>
+    </div>
+    <div class="card p-3 rounded-0">
+      <div class="crad-title">
+        <h4 class="fw-bold my-3 ms-3" style="color: grey;">管家邀請碼</h4>
+      </div>
+      <div class="card-body">
+        <form method="post" autocomplete="off">
+          <div class="mb-3 mt-3 row">
+            <label for="invite" class="col-sm-3 col-form-label">新邀請碼</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="invite" name="invite" placeholder="{{ invite_code }}">
+            </div>
+          </div>                   
+          <div class="my-3 row">
+            <div class="col-sm-3 offset-sm-9  text-center">
+              <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="submit_invite" value="submit">
+                儲存</button>
+            </div>
+          </div>
+        </form>              
+      </div>
+      <hr>
+      <div class="crad-title">
+        <h4 class="fw-bold my-3 ms-3" style="color: grey;">密碼</h4>
+      </div>
+      <div class="card-body">
+        <form method="post" autocomplete="off">
+          <div class="mb-3 mt-3 row">
+            <label for="old_pw" class="col-sm-3 col-form-label">輸入舊密碼</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="old_pw" name="old_pw">
+            </div>
+          </div>
+          <div class="mb-3 mt-3 row">
+            <label for="new_pw" class="col-sm-3 col-form-label">輸入新密碼</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="new_pw" name="new_pw" placeholder="長度至少為8個字元，並混合大小寫字母、數字">
+            </div>
+          </div>
+          <div class="mb-3 mt-3 row">
+            <label for="new_pw_confirm" class="col-sm-3 col-form-label">再次輸入新密碼</label>
+            <div class="col-sm-9">
+              <input type="password" class="form-control" id="new_pw_confirm" name="new_pw_confirm" placeholder="長度至少為8個字元，並混合大小寫字母、數字">
+            </div>
+          </div>                   
+          <div class="my-3 row">
+            <div class="col-sm-3 offset-sm-9  text-center">
+              <button class="btn w-100" type="submit" style="background-color: #68944e; color: white;" name="submit_pw" value="submit">
+                儲存</button>
+            </div>
+          </div>
+        </form>              
+      </div>
+      <hr>
+      <div class="card-body">
+        <div class="row">          
+          <div class="col-sm-4 offset-sm-4">
+            <a class="btn w-100 text-center" type="submit" style="background-color: #68944e; color: white;"  data-bs-toggle="modal" href="#logout">登出</a>
+          </div>
+        </div>             
+      </div>
+    </div>    
+  </div>
+</div>
+
+<div class="modal fade" id="logout" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content w-75-responsive">
+      <div class="modal-header">
+        <h5 class="modal-title">提醒</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        是否要登出？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+        <form method="post">
+          <a class="btn btn-dark" href="/admin/logout">確認</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+// prevent re-submitting form when refresh or hit previous page
+if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+}
+
+window.onload = function() {  
+  number_format();
+}
+
+// function
+
+function number_format() {
+
+  const nums_elements = document.getElementsByClassName('num');
+  for (let i = 0; i < nums_elements.length; i++) {
+    nums_elements[i].textContent = Number(nums_elements[i].textContent).toLocaleString();
+  }
+
+}
+
+
+
+</script>
+{% endblock %}

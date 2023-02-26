@@ -325,7 +325,7 @@ def form(room_num, check_in, check_out, total):
                     filter(Rooms.date == current_date_dt).\
                     update({'room_'+ room_num: 0})
                 current_date_dt += timedelta(days = 1)
-            db.session.commit()            
+            db.session.commit()         
 
             # add new booking record
 
