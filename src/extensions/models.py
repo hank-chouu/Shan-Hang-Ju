@@ -12,14 +12,16 @@ db = SQLAlchemy()
 
 class Rooms(db.Model):
     __tablename__ = 'rooms'
-    date = db.Column(db.DateTime, primary_key = True)
+    serial = db.Column(db.Integer, primary_key = True)
+    date = db.Column(db.DateTime, nullable = False)
     room_301 = db.Column(db.Integer, nullable = False)
     room_302 = db.Column(db.Integer, nullable = False)
     room_303 = db.Column(db.Integer, nullable = False)
     room_501 = db.Column(db.Integer, nullable = False)
     room_502 = db.Column(db.Integer, nullable = False)
 
-    def __init__(self, date, room_301, room_302, room_303, room_501, room_502):
+    def __init__(self, serial, date, room_301, room_302, room_303, room_501, room_502):
+        self.serial = serial
         self.date = date
         self.room_301 = room_301
         self.room_302 = room_302

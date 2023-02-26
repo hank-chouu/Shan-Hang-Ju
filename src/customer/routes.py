@@ -414,7 +414,7 @@ def by_me():
     start_date = datetime.strptime(start_date, '%Y/%m/%d').replace(tzinfo=tz)
 
     for i in range(180):
-        row = Rooms(start_date, 1, 1, 1, 1, 1)
+        row = Rooms(i+1, start_date, 1, 1, 1, 1, 1)
         db.session.add(row)
         start_date = start_date + timedelta(days=1)
     db.session.commit()

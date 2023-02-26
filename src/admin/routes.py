@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, logout_user
 import bcrypt
 from datetime import datetime, timezone, timedelta
 
-from src.extensions.models import db, Admin, User, Booking
+from src.extensions.models import db, Admin, User, Booking, Rooms
 from src.extensions.logger import allLogger, abort_msg
 from src.customer.routes import names
 
@@ -259,6 +259,33 @@ def settings():
 
 
 @admin.route('/logout', methods=['GET'])
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('customer.home'))
+
+@admin.route('/rooms', methods=['GET'])
+@login_required
+def admin_rooms():
+
+    try:
+
+        today = datetime.now(tz) + timedelta(days=-1)
+        query = db.session.query(Rooms).\
+            filter(Rooms.date >= today).\
+            order_by(Rooms.serial).all()
+        
+        data = {}        
+        for row in query:
+            date = row.date
+            date = (date + timedelta(hours=8)).strftime('%Y-%m-%d')
+            data[date] = row2dict(row)
+
+        return render_template('rooms_admin.html', data = data)
+
+    except Exception as e:
+        allLogger.error(str(e))
+        abort_msg(e)
+
+
+
