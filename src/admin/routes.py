@@ -104,7 +104,7 @@ def login():
 
 
 @admin.route('/bookings', methods = ['GET', 'POST'])
-# @login_required
+@login_required
 def bookings():
 
     # future addition:
@@ -132,7 +132,7 @@ def bookings():
         abort_msg(e)
 
 @admin.route('/bookings/<int:id>', methods = ['GET', 'POST'])
-# @login_required
+@login_required
 def detailed_booking(id):
     
     try:
@@ -192,7 +192,7 @@ def detailed_booking(id):
 
 
 @admin.route('/settings', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def settings():
 
     try:
@@ -206,7 +206,6 @@ def settings():
                 if request.form.get('invite') == '':
                     flash('輸入有誤，請再試一次', category='error')
                     return render_template('settings.html', invite_code = invite_code)
-
 
                 new_invite_code = request.form.get('invite')
                 db.session.query(Admin).\
@@ -258,11 +257,14 @@ def settings():
         abort_msg(e)
 
 
+
 @admin.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('customer.home'))
+
+
 
 @admin.route('/rooms', methods=['GET'])
 @login_required
@@ -270,7 +272,7 @@ def admin_rooms():
 
     try:
 
-        today = datetime.now(tz) + timedelta(days=-1)
+        today = datetime.now(tz) - timedelta(days=1)
         query = db.session.query(Rooms).\
             filter(Rooms.date >= today).\
             order_by(Rooms.serial).all()
@@ -286,6 +288,3 @@ def admin_rooms():
     except Exception as e:
         allLogger.error(str(e))
         abort_msg(e)
-
-
-
