@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import pandas as pd
 from sqlalchemy import func
 
@@ -9,8 +9,6 @@ from src.extensions.logger import allLogger, abort_msg
 from src.extensions.email import mail, create_msg
 
 ## functions, variables and objects
-
-# tz = timezone(timedelta(hours=+8))
 
 customer = Blueprint('customer', __name__)
 
@@ -142,9 +140,8 @@ def reservation():
                 if check_in != '' and check_out != '':
 
                     
-                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d')#.replace(tzinfo=tz)
-                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d')#.replace(tzinfo=tz)
-
+                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d')
+                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d')
                     print(type(check_in_dt))
                     print(check_in_dt)
 
@@ -202,7 +199,6 @@ def reservation():
                         # prepare price table
                         date_pricing = pd.read_csv('src/files/date_pricing.csv')
                         date_pricing['date_dt'] = pd.to_datetime(date_pricing['date'], format='%Y/%m/%d')
-                        # date_pricing['date_dt'] = date_pricing['date_dt'].dt.tz_localize('UTC').dt.tz_convert('Asia/Taipei')
                         date_pricing = date_pricing[(date_pricing.date_dt >= pd.Timestamp(check_in_dt)) & (date_pricing.date_dt < pd.Timestamp(check_out_dt))]
 
                         info = {}
@@ -272,8 +268,8 @@ def form(room_num, check_in, check_out, total):
         info['deposit'] = deposit
         info['final'] = final
 
-        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d')#.replace(tzinfo=tz)
-        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d')#.replace(tzinfo=tz)
+        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d')
+        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d')
         total_days = (check_out_dt.date() - check_in_dt.date()).days
         info['total_days'] = total_days
 
@@ -419,7 +415,7 @@ def reset():
     db.create_all()
 
     start_date = '2023/02/01'
-    start_date = datetime.strptime(start_date, '%Y/%m/%d')#.replace(tzinfo=tz)
+    start_date = datetime.strptime(start_date, '%Y/%m/%d')
 
     for i in range(180):
         row = Rooms(i+1, start_date, 1, 1, 1, 1, 1)
