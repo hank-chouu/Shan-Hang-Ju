@@ -32,7 +32,7 @@ def int_to_yes_no_dict_item(row_dict, keys:list):
             row_dict[key] = '是'
         
 
-tz = timezone(timedelta(hours=+8))
+# tz = timezone(timedelta(hours=+8))
 
 pricing = {'2 beds':['NT4,100', 'NT2,000', 'NT2,300', 'NT4,100'], 
            '3 beds':['NT4,500', 'NT2,800', 'NT3,300', 'NT4,500'], 
@@ -139,8 +139,8 @@ def reservation():
 
                 if check_in != '' and check_out != '':
 
-                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d').replace(tzinfo=tz)
-                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d').replace(tzinfo=tz)
+                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d')
+                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d')
 
                     # filter by date
                     
@@ -266,8 +266,8 @@ def form(room_num, check_in, check_out, total):
         info['deposit'] = deposit
         info['final'] = final
 
-        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
-        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d')
+        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d')
         total_days = (check_out_dt.date() - check_in_dt.date()).days
         info['total_days'] = total_days
 
@@ -329,7 +329,7 @@ def form(room_num, check_in, check_out, total):
 
             # add new booking record
 
-            created_at = datetime.now(tz)
+            created_at = datetime.now()
 
             client_info = [name, gender, phone, email]
             booking_info = [room_num, check_in_dt, check_out_dt, add_bed, arrival, parking, breakfast, special_needs, created_at]
@@ -389,8 +389,8 @@ def confirmed(order_id):
         order = db.session.query(Booking).filter(Booking.id == order_id).first()
         order = row2dict(order)
         order['room'] = names[order['room_num']]
-        order['check_in'] = (order['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-        order['check_out'] = (order['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        order['check_in'] = order['check_in'].strftime('%Y-%m-%d')
+        order['check_out'] = order['check_out'].strftime('%Y-%m-%d')
         int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
         if order['special_needs'] == '':
             order['special_needs'] = '無'
@@ -411,7 +411,7 @@ def by_me():
     # add rows
 
     start_date = '2023/02/01'
-    start_date = datetime.strptime(start_date, '%Y/%m/%d').replace(tzinfo=tz)
+    start_date = datetime.strptime(start_date, '%Y/%m/%d')
 
     for i in range(180):
         row = Rooms(i+1, start_date, 1, 1, 1, 1, 1)
@@ -419,6 +419,11 @@ def by_me():
         start_date = start_date + timedelta(days=1)
     db.session.commit()
 
+
+    # add admin 
+    row = Admin(1, '20230227', 'shanhangju', '$2b$12$1y2xQoTGQOUA/cb4byUmSugaI9wQXpMuogRwNoN8JEL5ruN7dvWai')
+    db.session.add(row)
+    db.session.commit()
     # updates
 
     # check_in = '2023-01-29'
