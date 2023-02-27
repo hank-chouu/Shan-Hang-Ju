@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+from flask_login import login_required
 from datetime import datetime, timedelta
 import pandas as pd
 from sqlalchemy import func
@@ -408,6 +409,7 @@ def confirmed(order_id):
 
 ### testing routes ###
 @customer.route('/reset', methods=["GET"])
+@login_required
 def reset():
 
     # add rows
