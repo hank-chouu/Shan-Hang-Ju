@@ -1,5 +1,4 @@
 from src import create_app
-from src.extensions.models import db
 
 app = create_app()
 
