@@ -91,6 +91,12 @@ class Admin(db.Model):
     username = db.Column(db.String(20), nullable = False)
     pw = db.Column(db.String(70), nullable = False)
 
+    def __init__(self, id, invite_code, username, pw):
+        self.id = id
+        self.invite_code = invite_code
+        self.username = username
+        self.pw = pw
+
 
 
 

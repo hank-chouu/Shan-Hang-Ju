@@ -9,8 +9,6 @@ from src.customer.routes import names
 
 admin = Blueprint('admin', __name__)
 
-# tz = timezone(timedelta(hours=+8))
-
 def row2dict(row):
     d = {}
     for column in row.__table__.columns:
@@ -166,6 +164,22 @@ def detailed_booking(id):
                 allLogger.info(''.join(['Order #', str(id), ' has changed final\'s status to \'unpaid\'.']))
 
             elif request.form.get('delete') == 'delete':
+
+                query = db.session.query(Booking).filter(Booking.id == id).first()
+                check_in_dt = query.check_in
+                check_out_dt = query.check_out
+                room_num = query.room_num
+
+                ## change room status
+                current_date_dt = check_in_dt
+                while (current_date_dt < check_out_dt):
+                    db.session.query(Rooms).\
+                        filter(Rooms.date == current_date_dt).\
+                        update({'room_'+ room_num: 1})
+                    current_date_dt += timedelta(days = 1)
+                db.session.commit()  
+
+                # change order status       
                 db.session.query(Booking).\
                     filter(Booking.id == id).\
                     update({'deleted': 1})
