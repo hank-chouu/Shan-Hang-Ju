@@ -3,11 +3,14 @@ from datetime import datetime, timezone, timedelta
 import pandas as pd
 from sqlalchemy import func
 
+
 from src.extensions.models import db, Rooms, Booking, Admin
 from src.extensions.logger import allLogger, abort_msg
 from src.extensions.email import mail, create_msg
 
 ## functions, variables and objects
+
+# tz = timezone(timedelta(hours=+8))
 
 customer = Blueprint('customer', __name__)
 
@@ -32,7 +35,6 @@ def int_to_yes_no_dict_item(row_dict, keys:list):
             row_dict[key] = '是'
         
 
-tz = timezone(timedelta(hours=+8))
 
 pricing = {'2 beds':['NT4,100', 'NT2,000', 'NT2,300', 'NT4,100'], 
            '3 beds':['NT4,500', 'NT2,800', 'NT3,300', 'NT4,500'], 
@@ -139,8 +141,12 @@ def reservation():
 
                 if check_in != '' and check_out != '':
 
-                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d').replace(tzinfo=tz)
-                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d').replace(tzinfo=tz)
+                    
+                    check_in_dt = datetime.strptime(check_in, '%Y/%m/%d')#.replace(tzinfo=tz)
+                    check_out_dt = datetime.strptime(check_out, '%Y/%m/%d')#.replace(tzinfo=tz)
+
+                    print(type(check_in_dt))
+                    print(check_in_dt)
 
                     # filter by date
                     
@@ -196,7 +202,7 @@ def reservation():
                         # prepare price table
                         date_pricing = pd.read_csv('src/files/date_pricing.csv')
                         date_pricing['date_dt'] = pd.to_datetime(date_pricing['date'], format='%Y/%m/%d')
-                        date_pricing['date_dt'] = date_pricing['date_dt'].dt.tz_localize('UTC').dt.tz_convert('Asia/Taipei')
+                        # date_pricing['date_dt'] = date_pricing['date_dt'].dt.tz_localize('UTC').dt.tz_convert('Asia/Taipei')
                         date_pricing = date_pricing[(date_pricing.date_dt >= pd.Timestamp(check_in_dt)) & (date_pricing.date_dt < pd.Timestamp(check_out_dt))]
 
                         info = {}
@@ -266,8 +272,8 @@ def form(room_num, check_in, check_out, total):
         info['deposit'] = deposit
         info['final'] = final
 
-        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
-        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
+        check_in_dt = datetime.strptime(check_in, '%Y-%m-%d')#.replace(tzinfo=tz)
+        check_out_dt = datetime.strptime(check_out, '%Y-%m-%d')#.replace(tzinfo=tz)
         total_days = (check_out_dt.date() - check_in_dt.date()).days
         info['total_days'] = total_days
 
@@ -329,7 +335,7 @@ def form(room_num, check_in, check_out, total):
 
             # add new booking record
 
-            created_at = datetime.now(tz)
+            created_at = datetime.now()
 
             client_info = [name, gender, phone, email]
             booking_info = [room_num, check_in_dt, check_out_dt, add_bed, arrival, parking, breakfast, special_needs, created_at]
@@ -389,8 +395,8 @@ def confirmed(order_id):
         order = db.session.query(Booking).filter(Booking.id == order_id).first()
         order = row2dict(order)
         order['room'] = names[order['room_num']]
-        order['check_in'] = (order['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-        order['check_out'] = (order['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        order['check_in'] = order['check_in'].strftime('%Y-%m-%d')
+        order['check_out'] = order['check_out'].strftime('%Y-%m-%d')
         int_to_yes_no_dict_item(order, ['add_bed', 'parking', 'breakfast'])
         if order['special_needs'] == '':
             order['special_needs'] = '無'
@@ -405,13 +411,15 @@ def confirmed(order_id):
 
 
 ### testing routes ###
-@customer.route('/manual-addition', methods=["GET"])
-def by_me():
+@customer.route('/reset', methods=["GET"])
+def reset():
 
     # add rows
+    db.drop_all()
+    db.create_all()
 
     start_date = '2023/02/01'
-    start_date = datetime.strptime(start_date, '%Y/%m/%d').replace(tzinfo=tz)
+    start_date = datetime.strptime(start_date, '%Y/%m/%d')#.replace(tzinfo=tz)
 
     for i in range(180):
         row = Rooms(i+1, start_date, 1, 1, 1, 1, 1)
@@ -419,43 +427,15 @@ def by_me():
         start_date = start_date + timedelta(days=1)
     db.session.commit()
 
-    # updates
+    row = Admin(1, '20230227', 'shanhangju', '$2b$12$1y2xQoTGQOUA/cb4byUmSugaI9wQXpMuogRwNoN8JEL5ruN7dvWai')
+    db.session.add(row)
+    db.session.commit()
 
-    # check_in = '2023-01-29'
-    # check_out = '2023-01-30'
-    # room_num = '302'
-    # check_in_dt = datetime.strptime(check_in, '%Y-%m-%d').replace(tzinfo=tz)
-    # check_out_dt = datetime.strptime(check_out, '%Y-%m-%d').replace(tzinfo=tz)
-    # current_date_dt = check_in_dt
-    # while (current_date_dt < check_out_dt):
-    #     db.session.query(Rooms).\
-    #         filter(Rooms.date == current_date_dt).\
-    #         update({'room_'+ room_num: 1})
-    #     current_date_dt += timedelta(days = 1)
 
-    # drop all
-
-    # db.drop_all()
 
     return 'OK'
 
 
 
 
-@customer.route('/update')
-def uppdate():
-
-
-
-    return 'Update'
-
-
-@customer.route('/drop-all')
-def drop():
-
-
-    db.drop_all()
-    
-
-    return 'drop all'
 

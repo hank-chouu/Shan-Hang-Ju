@@ -9,8 +9,6 @@ from src.customer.routes import names
 
 admin = Blueprint('admin', __name__)
 
-tz = timezone(timedelta(hours=+8))
-
 def row2dict(row):
     d = {}
     for column in row.__table__.columns:
@@ -112,7 +110,7 @@ def bookings():
     # find certain row from some date
 
     try:
-        today = datetime.now(tz) - timedelta(days=1) 
+        today = datetime.now() - timedelta(days=1) 
         query = db.session.query(Booking).filter(
             Booking.check_in >= today, 
             Booking.check_out >= today, 
@@ -121,8 +119,8 @@ def bookings():
         data = {}
         for row in query:
             data[row.id] = row2dict(row)
-            data[row.id]['check_in'] = (data[row.id]['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-            data[row.id]['check_out'] = (data[row.id]['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+            data[row.id]['check_in'] = data[row.id]['check_in'].strftime('%Y-%m-%d')
+            data[row.id]['check_out'] = data[row.id]['check_out'].strftime('%Y-%m-%d')
             int_to_yes_no_dict_item(data[row.id], ['add_bed', 'parking', 'breakfast'])
 
         return render_template('bookings.html', data = data)
@@ -177,8 +175,8 @@ def detailed_booking(id):
         query = db.session.query(Booking).filter(Booking.id == id).first()
         data = row2dict(query)
         data['room'] = names[data['room_num']][:3]
-        data['check_in'] = (data['check_in'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
-        data['check_out'] = (data['check_out'] + timedelta(hours=+8)).strftime('%Y-%m-%d')
+        data['check_in'] = data['check_in'].strftime('%Y-%m-%d')
+        data['check_out'] = data['check_out'].strftime('%Y-%m-%d')
         
         if data['special_needs'] == '':
             data['special_needs'] = '無' 
@@ -272,7 +270,7 @@ def admin_rooms():
 
     try:
 
-        today = datetime.now(tz) - timedelta(days=1)
+        today = datetime.now() - timedelta(days=1)
         query = db.session.query(Rooms).\
             filter(Rooms.date >= today).\
             order_by(Rooms.serial).all()
@@ -280,7 +278,7 @@ def admin_rooms():
         data = {}        
         for row in query:
             date = row.date
-            date = (date + timedelta(hours=8)).strftime('%Y-%m-%d')
+            date = date.strftime('%Y-%m-%d')
             data[date] = row2dict(row)
 
         return render_template('rooms_admin.html', data = data)
