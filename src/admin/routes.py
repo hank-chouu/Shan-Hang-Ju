@@ -278,6 +278,7 @@ def settings():
 @login_required
 def logout():
     logout_user()
+    allLogger.info('Admin logged out successfully')
     return redirect(url_for('customer.home'))
 
 
