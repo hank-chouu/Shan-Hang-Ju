@@ -195,7 +195,9 @@ def detailed_booking(id):
         data['check_out'] = data['check_out'].strftime('%Y-%m-%d')
         
         if data['special_needs'] == '':
-            data['special_needs'] = '無' 
+            data['special_needs'] = '無'
+        if data['email'] == '':
+            data['email'] = '未輸入'
         int_to_yes_no_dict_item(data, ['add_bed', 'parking', 'breakfast'])  
 
         return render_template('booking_detail.html', data = data)

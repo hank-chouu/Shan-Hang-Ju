@@ -139,22 +139,17 @@ def reservation():
                 room_type = request.form.get('room_type')
 
                 if check_in != '' and check_out != '':
-
                     
                     check_in_dt = datetime.strptime(check_in, '%Y/%m/%d')
                     check_out_dt = datetime.strptime(check_out, '%Y/%m/%d')
-                    print(type(check_in_dt))
-                    print(check_in_dt)
 
-                    # filter by date
-                    
+                    # filter by date                    
                     query = db.session.query(Rooms).filter(
                             Rooms.date >= check_in_dt, 
                             Rooms.date < check_out_dt
                     ).all()
 
                     # check if rooms are available
-
                     available_rooms = []
                     total_days = (check_out_dt.date() - check_in_dt.date()).days
                     
@@ -205,7 +200,7 @@ def reservation():
                         info = {}
                         for room in available_rooms:
                             room_detail = {}
-                            room_detail['img'] = room + '_1.jpg'
+                            room_detail['img'] = room + '.jpg'
                             room_detail['name'] = names[room]
                             room_detail['dates'] = [check_in.replace('/', '-'), check_out.replace('/', '-'), len(date_pricing)]
                             room_detail['amount'] = date_pricing[room].sum()
@@ -299,7 +294,7 @@ def form(room_num, check_in, check_out, total):
 
             # check
             # invite code and valid phone number
-            if '' in [name, phone, email, invite_code_form]:
+            if '' in [name, phone, invite_code_form]:
                 flash('資料未填齊全', category='error')
                 return render_template('form.html', info=info)
             elif len(phone) != 10:
@@ -352,18 +347,19 @@ def form(room_num, check_in, check_out, total):
 
 
             # sending confirmation mail
+            if email != '':
 
-            mail_info = {}
-            mail_info['order_id'] = new_id
-            mail_info['room'] = names[room_num]
-            mail_info['check_in'] = check_in
-            mail_info['check_out'] = check_out
-            mail_info['total'] = total
-            mail_info['deposit'] = deposit
-            mail_info['final'] = final
+                mail_info = {}
+                mail_info['order_id'] = new_id
+                mail_info['room'] = names[room_num]
+                mail_info['check_in'] = check_in
+                mail_info['check_out'] = check_out
+                mail_info['total'] = total
+                mail_info['deposit'] = deposit
+                mail_info['final'] = final
 
-            msg = create_msg(email, mail_info)
-            mail.send(msg)
+                msg = create_msg(email, mail_info)
+                mail.send(msg)
 
             session['access_to_confirm'] = new_id
             session['access_to_form'] = False

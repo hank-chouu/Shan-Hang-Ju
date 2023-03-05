@@ -37,7 +37,7 @@ class Booking(db.Model):
     name = db.Column(db.String(20), nullable = False)
     gender = db.Column(db.String(10), nullable = False)
     phone = db.Column(db.String(20), nullable = False)
-    email = db.Column(db.String(50), nullable = False)
+    email = db.Column(db.String(50), nullable = True)
 
     room_num = db.Column(db.String(10), nullable = False)
     check_in = db.Column(db.DateTime, nullable = False)
