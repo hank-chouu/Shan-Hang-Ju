@@ -16,7 +16,7 @@ customer = Blueprint('customer', __name__)
 def img_indexing(room_num, img_amount:int):
     idx = {}
     for i in range(img_amount):
-        idx[i] = ''.join([str(room_num), '_', str(i+2), '.jpg'])
+        idx[i] = ''.join([str(room_num), '_', str(i), '.jpg'])
     return idx
 
 def row2dict(row):
@@ -71,7 +71,7 @@ def rooms_each(room_num):
 
         if room_num == 301: 
 
-            img_amount = 5
+            img_amount = 3
             photo_index = img_indexing(room_num, img_amount)
 
             return render_template('rooms_each.html', title = names[str(room_num)][0:3], 
